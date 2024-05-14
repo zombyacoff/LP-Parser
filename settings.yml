@@ -1,8 +1,13 @@
+offset:
+  offset: true
+  value: 4 #minimum 2
 release_date:
-  important: false
+  release_date: true
   range:
     - 2024
+    - 2023
   exceptions:
     -
 websites_list:
-  - ""
+  - "https://telegra.ph/Xbox-Game-pass-Ultimate"
+  - "https://telegra.ph/Xbox-Gamepass-Ultimate"

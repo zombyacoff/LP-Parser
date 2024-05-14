@@ -3,6 +3,7 @@ import requests
 import os
 import re
 import yaml
+import sys
 from datetime import datetime
 from calendar import monthrange
 
@@ -12,10 +13,15 @@ try: logFile = open(f"output/{launchTime}.txt", 'w+')
 except: os.mkdir("output"); logFile = open(f"output/{launchTime}.txt", 'w+')
 
 with open("settings.yml") as fh: settings = yaml.safe_load(fh)
+websites = settings["websites_list"]
+offset = settings["offset"]
+offsetBool = offset["offset"]
+offsetValue = offset["value"]
 releaseDate = settings["release_date"]
-releaseDateImportant = releaseDate["important"]
+releaseDateImportant = releaseDate["release_date"]
 if releaseDateImportant: rightYear = [i for i in releaseDate["range"] if i not in releaseDate["exceptions"]]
 else: rightYear = []
+fh.close()
 
 def progressBar(current : int, total : int) -> None:
     percent = 100 * current/total
@@ -39,7 +45,12 @@ def main():
     counter = 1
     for month in range(1, 13):
         for day in range(1, monthrange(2020, month)[1]+1):
-            websitesList = [i+f"-{month:02}-{day:02}" for i in settings["websites_list"]]
+            websitesList = [url+f"-{month:02}-{day:02}" for url in websites]
+            if offsetBool:
+                for i in range(len(websites)):
+                    for k in range(2, offsetValue+1):
+                        websitesList.append([url+f"-{month:02}-{day:02}-{k}" for url in websites][i])
+            print(websitesList)
             for url in websitesList: parse(url)
             progressBar(counter, 366)
             counter += 1
