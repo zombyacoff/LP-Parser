@@ -50,7 +50,6 @@ def main():
                 for i in range(len(websites)):
                     for k in range(2, offsetValue+1):
                         websitesList.append([url+f"-{month:02}-{day:02}-{k}" for url in websites][i])
-            print(websitesList)
             for url in websitesList: parse(url)
             progressBar(counter, 366)
             counter += 1
