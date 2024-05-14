@@ -8,30 +8,31 @@ from calendar import monthrange
 
 launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
-try: logFile = open(f"output/{launchTime}.txt", 'w+')
-except: os.mkdir("output"); logFile = open(f"output/{launchTime}.txt", 'w+')
+logFile = open(f"{launchTime}.txt", 'w+')
 
-with open("settings.yml") as fh: settings = yaml.safe_load(fh)
+with open("settings.yml") as s: settings = yaml.safe_load(s)
 websites = settings["websites_list"]
+
 offset = settings["offset"]
 offsetBool = offset["offset"]
 offsetValue = offset["value"]
+
 releaseDate = settings["release_date"]
 releaseDateBool = releaseDate["release_date"]
-if releaseDateBool: rightYear = [year for year in releaseDate["years"]]
-else: rightYear = []
-fh.close()
+releaseDateYears = releaseDate["years"]
 
-def progressBar(current : int, total : int) -> None:
+s.close()
+
+def progressBar(current : int, total : int):
     percent = 100 * current/total
     print(f"\r{round(percent)*'█'+(100-round(percent))*'#'} [{round(percent,1)}%]", end='\r')
 
-def parse(url : str) -> None:
+def parse(url : str):
     page = requests.get(url)
     if page.status_code != 404:
         soup = BeautifulSoup(page.text, "html.parser")
         release_date = int(soup.select_one("time").get_text('\n', strip=True)[-4:])
-        if not releaseDateBool or release_date in rightYear:
+        if not releaseDateBool or release_date in releaseDateYears:
             text = [i for i in soup.stripped_strings]
             for i in range(len(text)):
                 login = re.findall(r"\S+@\S+\.\S+", text[i])
@@ -54,8 +55,8 @@ def main():
             counter += 1
 
     logFile.close()
-    os.rename(f"output/{launchTime}.txt", f"output/{launchTime}_complete.txt")
-    print(f"\nSuccessfull complete! >> output/{launchTime}_complete.txt")
+    os.rename(f"{launchTime}.txt", f"{launchTime}_complete.txt")
+    print(f"\nSuccessfull complete! >> {launchTime}_complete.txt")
 
 if __name__ == "__main__":
     main()
