@@ -1,0 +1,8 @@
+release_date:
+  important: false
+  range:
+    - 2024
+  exceptions:
+    -
+websites_list:
+  - ""
