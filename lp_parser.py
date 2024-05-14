@@ -3,7 +3,6 @@ import requests
 import os
 import re
 import yaml
-import sys
 from datetime import datetime
 from calendar import monthrange
 
