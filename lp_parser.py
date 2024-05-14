@@ -18,8 +18,8 @@ offset = settings["offset"]
 offsetBool = offset["offset"]
 offsetValue = offset["value"]
 releaseDate = settings["release_date"]
-releaseDateImportant = releaseDate["release_date"]
-if releaseDateImportant: rightYear = [i for i in releaseDate["range"] if i not in releaseDate["exceptions"]]
+releaseDateBool = releaseDate["release_date"]
+if releaseDateBool: rightYear = [year for year in releaseDate["years"]]
 else: rightYear = []
 fh.close()
 
@@ -32,7 +32,7 @@ def parse(url : str) -> None:
     if page.status_code != 404:
         soup = BeautifulSoup(page.text, "html.parser")
         release_date = int(soup.select_one("time").get_text('\n', strip=True)[-4:])
-        if not releaseDateImportant or release_date in rightYear:
+        if not releaseDateBool or release_date in rightYear:
             text = [i for i in soup.stripped_strings]
             for i in range(len(text)):
                 login = re.findall(r"\S+@\S+\.\S+", text[i])
