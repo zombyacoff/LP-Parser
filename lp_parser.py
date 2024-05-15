@@ -37,7 +37,7 @@ passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
-    
+
     print(f"\r{round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
 
 def microsoft_check(data : list[str]) -> bool:
@@ -73,7 +73,7 @@ def parse(url : str, soup : BeautifulSoup) -> None:
 
     for i, current in enumerate(website_text):
         login = re.findall(emailRegex, current)
-        if login:
+        if login and login[0] != "dmca@telegram.org":
             password = website_text[i+1].split()[-1] if re.findall(passwordRegex, website_text[i+1]) else website_text[i+2]
             write_file([url, login[0], password])
             break
