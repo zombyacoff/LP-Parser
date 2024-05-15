@@ -17,15 +17,18 @@ option.add_argument("start-maximized")
 launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
 with open("settings.yml") as s: settings = yaml.safe_load(s)
-websitesList = settings["websites_list"]
+
+exceptions = settings["exceptions"]
 
 offset = settings["offset"]
 offsetBool = offset["offset"]
-offsetValue = offset["value"]
+offsetValue = offset["value"] if offsetBool else 1
 
 releaseDate = settings["release_date"]
 releaseDateBool = releaseDate["release_date"]
 releaseDateYears = releaseDate["years"]
+
+websitesList = settings["websites_list"]
 
 s.close()
 
@@ -73,7 +76,7 @@ def parse(url : str, soup : BeautifulSoup) -> None:
 
     for i, current in enumerate(website_text):
         login = re.findall(emailRegex, current)
-        if login and login[0] != "dmca@telegram.org":
+        if login and login[0] not in exceptions:
             password = website_text[i+1].split()[-1] if re.findall(passwordRegex, website_text[i+1]) else website_text[i+2]
             write_file([url, login[0], password])
             break
@@ -90,13 +93,13 @@ def main():
     counter = 1
     for month in range(1, 13):
         for day in range(1, monthrange(2020, month)[1]+1):
-            for value in range(0, offsetValue if offsetBool else 1):
+            for value in range(0, offsetValue):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
                             else url+f"-{month:02}-{day:02}" 
                             for url in websitesList]
                 for url in url_list:
                     check_url(url)
-                progress_bar(counter, 366)
+                progress_bar(counter, 366*offsetValue)
                 counter += 1
 
     logFile.close()
