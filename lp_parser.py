@@ -25,8 +25,6 @@ releaseDateYears = releaseDate["years"]
 
 websitesList = settings["websites_list"]
 
-microsoftLoginUrl = "https://login.live.com/ppsecure/secure.srf"
-
 emailRegex = r"\S+@\S+\.\S+"
 passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 
@@ -56,10 +54,10 @@ def check_url(url : str) -> None:
     The following code checks if the URL exists. 
     If the result is positive, the page is parsed to identify 
     the year the article was written. 
-    This is done to verify if the conditions specified in the "settings.yml" 
-    file's "release_date" section have been satisfied. 
+    This is done to verify if the conditions specified in the ”settings.yml” 
+    file's ”release_date” section have been satisfied. 
     If the conditions are met, 
-    the page will then be further parsed by the "parse()" function.
+    the page will then be further parsed by the ”parse()” function.
     """
     page = requests.get(url)
 
