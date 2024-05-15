@@ -42,7 +42,11 @@ outputIndex = 1
 yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 and launchTime.year in releaseDateYears else 12 
  
 
-def progress_bar(doing_something : str, current : int, total : int) -> None:
+def progress_bar(
+    doing_something : str, 
+    current : int, 
+    total : int
+) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
     bar = round_percent*"█"+(100-round_percent)*"#"
@@ -51,26 +55,28 @@ def progress_bar(doing_something : str, current : int, total : int) -> None:
           end="\r")
 
 
-def check_url(url : str) -> None:
+def check_url(url : str) -> bool:
     """
-    The following code checks if the URL exists. 
-    If the result is positive, the page is parsed to identify 
-    the year the article was written. 
-    This is done to verify if the conditions specified in the ”settings.yml” 
-    file's ”release_date” section have been satisfied. 
-    If the conditions are met, 
-    the page will then be further parsed by the ”parse()” function.
+    The following code checks whether a URL exists. 
+    If the result is positive, the page is parsed 
+    to determine the year the article was published. 
+    This is done to verify whether the conditions 
+    specified in the ”release_date” section 
+    of the ”settings.yml” file have been met. 
+    The function returns a boolean value 
+    indicating whether all conditions have been satisfied.
     """
+    global soup
     page = requests.get(url)
 
     if page.status_code != 404:
         soup = BeautifulSoup(page.text, "html.parser")
         release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
-        if not releaseDateBool or release_date in releaseDateYears:
-            parse(url, soup)
+        return not releaseDateBool or release_date in releaseDateYears
+    return False
 
 
-def parse(url : str, soup : BeautifulSoup) -> None:
+def parse(url : str) -> None:
     website_text = [sentence for sentence in soup.stripped_strings]
 
     for i, current in enumerate(website_text):
@@ -121,7 +127,7 @@ def main():
                             else url+f"-{month:02}-{day:02}" 
                             for url in websitesList]
                 for url in url_list:
-                    check_url(url)
+                    if check_url(url): parse(url)
                 progress_bar("Parsing...", counter, total_days*offsetValue)
                 counter += 1
 
