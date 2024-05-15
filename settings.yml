@@ -1,11 +1,11 @@
 exceptions:
-  - ""
+- ""
 offset:
   offset: false
   value: 2 #minimum 2
 release_date:
   release_date: true
   years:
-    - 2024
+  - 2024
 websites_list:
-  - ""
+- ""

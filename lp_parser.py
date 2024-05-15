@@ -86,6 +86,8 @@ def main():
     with open(f"output-{launchTimeFormat}.yaml", "w") as file:
         yaml.dump(outputExample, file)
 
+    month_in_days = lambda month_value: sum([monthrange(2020, month_value)[1] for _ in range(month_value)])
+
     counter = 1
     for month in range(1, yearRange):
         for day in range(1, monthrange(2020, month)[1]+1):
@@ -95,15 +97,8 @@ def main():
                             for url in websitesList]
                 for url in url_list:
                     check_url(url)
-                progress_bar(counter, 366*offsetValue)
+                progress_bar(counter, month_in_days(yearRange)*offsetValue)
                 counter += 1
-
-    """
-    with open("output-15-05-2024-14-34-30.yaml", "r") as file:
-        microsoftData = yaml.safe_load(file)
-        for i in range(len(microsoftData["password"])):
-            microsoft_check([microsoftData["login"][i], microsoftData["password"][i]])
-    """
 
     os.rename(f"output-{launchTimeFormat}.yaml", f"output-{launchTimeFormat}-complete.yaml")
     print(f"\nSuccessfull complete! >> output-{launchTimeFormat}-complete.yaml")
