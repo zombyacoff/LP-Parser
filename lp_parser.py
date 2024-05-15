@@ -42,12 +42,12 @@ outputIndex = 1
 yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 and launchTime.year in releaseDateYears else 12 
  
 
-def progress_bar(current : int, total : int) -> None:
+def progress_bar(doing_something : str, current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
     bar = round_percent*"█"+(100-round_percent)*"#"
 
-    print(f"\rParsing... {bar} \033[1;36m[{percent:.2f}%]\033[0m",
+    print(f"\r{doing_something} {bar} \033[1;36m[{percent:.2f}%]\033[0m",
           end="\r")
 
 
@@ -122,7 +122,7 @@ def main():
                             for url in websitesList]
                 for url in url_list:
                     check_url(url)
-                progress_bar(counter, total_days*offsetValue)
+                progress_bar("Parsing...", counter, total_days*offsetValue)
                 counter += 1
 
     os.rename(outputFileName, outputFileNameComplete)
