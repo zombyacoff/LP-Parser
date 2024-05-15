@@ -43,6 +43,7 @@ def progress_bar(current : int, total : int) -> None:
 
     print(f"\r{round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
 
+"""
 def microsoft_check(data : list[str]) -> bool:
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
     driver.get(microsoftLoginUrl)
@@ -61,6 +62,7 @@ def microsoft_check(data : list[str]) -> bool:
     except:
         return True
     driver.close()
+"""
 
 def check_url(url : str) -> None:
     page = requests.get(url)
@@ -93,7 +95,7 @@ def main():
     counter = 1
     for month in range(1, 13):
         for day in range(1, monthrange(2020, month)[1]+1):
-            for value in range(0, offsetValue):
+            for value in range(offsetValue):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
                             else url+f"-{month:02}-{day:02}" 
                             for url in websitesList]
