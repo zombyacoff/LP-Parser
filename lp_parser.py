@@ -39,6 +39,7 @@ outputIndex = 1
 
 yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 and launchTime.year in releaseDateYears else 12 
  
+
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
@@ -82,6 +83,7 @@ def write_output(url : str, login : str, password : str) -> None:
         yaml.dump(output_data, file)
     
     outputIndex += 1
+
 
 def main():
     with open(f"output-{launchTimeFormat}.yaml", "w") as file:
