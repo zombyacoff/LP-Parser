@@ -1,5 +1,3 @@
 bs4
 pyyaml
 requests
-selenium
-webdriver_manager
