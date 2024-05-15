@@ -1,9 +1,9 @@
 offset:
-  offset: true
+  offset: false
   value: 2 #minimum 2
 release_date:
   release_date: true
   years:
     - 2024
 websites_list:
-  - ""
+  - "https://telegra.ph/Xbox-Game-pass-Ultimate"
