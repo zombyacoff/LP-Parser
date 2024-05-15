@@ -43,7 +43,8 @@ def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
 
-    print(f"\rParsing... {round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
+    print(f"\rParsing... {round_percent*"█"+(100-round_percent)*"#"} \033[1;36m[{percent:.2f}%]\033[0m",
+          end="\r")
 
 
 def check_url(url : str) -> None:
@@ -86,10 +87,10 @@ def main():
     with open(f"output-{launchTimeFormat}.yaml", "w") as file:
         yaml.dump(outputExample, file)
 
-    month_in_days = lambda month_value: sum([monthrange(2020, month_value)[1] for _ in range(month_value)])
+    total_days = sum([monthrange(2020, month)[1] for month in range(1, yearRange+1)])
 
     counter = 1
-    for month in range(1, yearRange):
+    for month in range(1, yearRange+1):
         for day in range(1, monthrange(2020, month)[1]+1):
             for value in range(offsetValue):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
@@ -97,11 +98,11 @@ def main():
                             for url in websitesList]
                 for url in url_list:
                     check_url(url)
-                progress_bar(counter, month_in_days(yearRange)*offsetValue)
+                progress_bar(counter, total_days*offsetValue)
                 counter += 1
 
     os.rename(f"output-{launchTimeFormat}.yaml", f"output-{launchTimeFormat}-complete.yaml")
-    print(f"\nSuccessfull complete! >> output-{launchTimeFormat}-complete.yaml")
+    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> output-{launchTimeFormat}-complete.yaml")
 
 
 if __name__ == "__main__":
