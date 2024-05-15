@@ -1,10 +1,38 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
+from calendar import monthrange
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 import requests
 import os
 import re
 import yaml
-from datetime import datetime
-from calendar import monthrange
+import time
+
+option = webdriver.ChromeOptions()
+option.add_argument("start-maximized")
+
+def MicrosoftCheck(data : list[str]) -> bool:
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
+    driver.get('https://login.live.com/ppsecure/secure.srf')
+    time.sleep(2)
+    login = driver.find_element(By.ID,'i0116').send_keys(data[0])
+    time.sleep(1)
+    loginButton = driver.find_element(By.XPATH,'//*[@id="idSIButton9"]').click()
+    time.sleep(1)
+    code = driver.find_element(By.ID,'i0118').send_keys(data[1])
+    time.sleep(1)
+    codeButton = driver.find_element(By.XPATH,'//*[@id="idSIButton9"]').click()
+    time.sleep(1)
+    try:
+        if driver.find_element(By.ID,'i0118Error') or driver.find_element(By.ID,'idTD_Error') or driver.find_element(By.ID,'iSelectProofTitle'):
+            return False
+    except Exception:
+        return True
+    driver.close()
+
 
 launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
