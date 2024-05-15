@@ -7,7 +7,8 @@ from datetime import datetime
 from calendar import monthrange
 
 
-launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+launchTime = datetime.now()
+launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 
 with open("settings.yml") as file: 
     settings = yaml.safe_load(file)
@@ -36,6 +37,7 @@ outputExample = {
 }
 outputIndex = 1
 
+yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 and launchTime.year in releaseDateYears else 12 
  
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
@@ -68,24 +70,24 @@ def parse(url : str, soup : BeautifulSoup) -> None:
 def write_output(url : str, login : str, password : str) -> None:
     global outputIndex
 
-    with open(f"output-{launchTime}.yaml", "r") as file:
-        outputData = yaml.safe_load(file)
+    with open(f"output-{launchTimeFormat}.yaml", "r") as file:
+        output_data = yaml.safe_load(file)
 
-    outputData["url"][outputIndex] = url
-    outputData["login"][outputIndex] = login
-    outputData["password"][outputIndex] = password   
+    output_data["url"][outputIndex] = url
+    output_data["login"][outputIndex] = login
+    output_data["password"][outputIndex] = password   
 
-    with open(f"output-{launchTime}.yaml", "w") as file:
-        yaml.dump(outputData, file)
+    with open(f"output-{launchTimeFormat}.yaml", "w") as file:
+        yaml.dump(output_data, file)
     
     outputIndex += 1
 
 def main():
-    with open(f"output-{launchTime}.yaml", "w") as file:
+    with open(f"output-{launchTimeFormat}.yaml", "w") as file:
         yaml.dump(outputExample, file)
 
     counter = 1
-    for month in range(1, 13):
+    for month in range(1, yearRange):
         for day in range(1, monthrange(2020, month)[1]+1):
             for value in range(offsetValue):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
@@ -103,8 +105,8 @@ def main():
             microsoft_check([microsoftData["login"][i], microsoftData["password"][i]])
     """
 
-    os.rename(f"output-{launchTime}.yaml", f"output-{launchTime}-complete.yaml")
-    print(f"\nSuccessfull complete! >> output-{launchTime}-complete.yaml")
+    os.rename(f"output-{launchTimeFormat}.yaml", f"output-{launchTimeFormat}-complete.yaml")
+    print(f"\nSuccessfull complete! >> output-{launchTimeFormat}-complete.yaml")
 
 
 if __name__ == "__main__":
