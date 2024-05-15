@@ -127,7 +127,8 @@ def main():
                             else url+f"-{month:02}-{day:02}" 
                             for url in websitesList]
                 for url in url_list:
-                    if check_url(url): parse(url)
+                    if check_url(url): 
+                        parse(url)
                 progress_bar("Parsing...", counter, total_days*offsetValue)
                 counter += 1
 
