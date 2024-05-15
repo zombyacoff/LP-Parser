@@ -30,6 +30,9 @@ microsoftLoginUrl = "https://login.live.com/ppsecure/secure.srf"
 emailRegex = r"\S+@\S+\.\S+"
 passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 
+outputFolderName = "output"
+outputFileName = f"{outputFolderName}/output-{launchTimeFormat}.yml"
+outputFileNameComplete = f"{outputFolderName}/output-{launchTimeFormat}-complete.yml"
 outputExample = {
     "url": {},
     "login": {},
@@ -49,6 +52,15 @@ def progress_bar(current : int, total : int) -> None:
 
 
 def check_url(url : str) -> None:
+    """
+    The following code checks if the URL exists. 
+    If the result is positive, the page is parsed to identify 
+    the year the article was written. 
+    This is done to verify if the conditions specified in the "settings.yml" 
+    file's "release_date" section have been satisfied. 
+    If the conditions are met, 
+    the page will then be further parsed by the "parse()" function.
+    """
     page = requests.get(url)
 
     if page.status_code != 404:
@@ -70,23 +82,33 @@ def parse(url : str, soup : BeautifulSoup) -> None:
 
 
 def write_output(url : str, login : str, password : str) -> None:
+    """
+    The following code writes the data generated 
+    by the ”parse()” function to a file named ”output-__.yml”, 
+    which was previously created in the ”main()” function. 
+    All elements in the output are indexed, 
+    thanks to the ”outputIndex” variable.
+    """
     global outputIndex
 
-    with open(f"output-{launchTimeFormat}.yaml", "r") as file:
+    with open(outputFileName, "r") as file:
         output_data = yaml.safe_load(file)
 
     output_data["url"][outputIndex] = url
     output_data["login"][outputIndex] = login
     output_data["password"][outputIndex] = password   
 
-    with open(f"output-{launchTimeFormat}.yaml", "w") as file:
+    with open(outputFileName, "w") as file:
         yaml.dump(output_data, file)
     
     outputIndex += 1
 
 
 def main():
-    with open(f"output-{launchTimeFormat}.yaml", "w") as file:
+    if not os.path.exists(outputFolderName):
+        os.mkdir(outputFolderName)
+
+    with open(outputFileName, "w") as file:
         yaml.dump(outputExample, file)
 
     total_days = sum([monthrange(2020, month)[1] for month in range(1, yearRange+1)])
@@ -103,8 +125,8 @@ def main():
                 progress_bar(counter, total_days*offsetValue)
                 counter += 1
 
-    os.rename(f"output-{launchTimeFormat}.yaml", f"output-{launchTimeFormat}-complete.yaml")
-    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> output-{launchTimeFormat}-complete.yaml")
+    os.rename(outputFileName, outputFileNameComplete)
+    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {outputFileNameComplete}")
 
 
 if __name__ == "__main__":
