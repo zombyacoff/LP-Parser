@@ -43,11 +43,13 @@ outputExample = {
     "password": []
 }
 
+
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
 
     print(f"\r{round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
+
 
 def microsoft_check(data : list[str]) -> bool:
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
@@ -78,6 +80,7 @@ def check_url(url : str) -> None:
         if not releaseDateBool or release_date in releaseDateYears:
             parse(url, soup)
 
+
 def parse(url : str, soup : BeautifulSoup) -> None:
     website_text = [sentence for sentence in soup.stripped_strings]
 
@@ -88,14 +91,17 @@ def parse(url : str, soup : BeautifulSoup) -> None:
             output(url, login[0], password)
             break
 
+
 def output(url : str, login : str, password : str) -> None:
     with open(f"output-{launchTime}.yaml", "r") as file:
         outputData = yaml.safe_load(file)
         outputData["url"].append(url)
         outputData["login"].append(login)
         outputData["password"].append(password)
+
     with open(f"output-{launchTime}.yaml", "w") as file:
         yaml.dump(outputData, file)
+
 
 def main():
     outputFile = open(f"output-{launchTime}.yaml", "w")
@@ -120,8 +126,10 @@ def main():
             microsoft_check([microsoftData["login"][i], microsoftData["password"][i]])
     """
 
+    outputFile.close()
     os.rename(f"output-{launchTime}.yaml", f"output-{launchTime}-complete.yaml")
     print(f"\nSuccessfull complete! >> output-{launchTime}-complete.yaml")
+
 
 if __name__ == "__main__":
     main()
