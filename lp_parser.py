@@ -45,8 +45,9 @@ yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 a
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
+    bar = round_percent*"█"+(100-round_percent)*"#"
 
-    print(f"\rParsing... {round_percent*"█"+(100-round_percent)*"#"} \033[1;36m[{percent:.2f}%]\033[0m",
+    print(f"\rParsing... {bar} \033[1;36m[{percent:.2f}%]\033[0m",
           end="\r")
 
 
