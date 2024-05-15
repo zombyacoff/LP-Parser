@@ -10,6 +10,7 @@ from calendar import monthrange
 launchTime = datetime.now()
 launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 
+# ”settings.yml” parsing
 with open("settings.yml") as file: 
     settings = yaml.safe_load(file)
 
@@ -31,7 +32,7 @@ passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 outputFolderName = "output"
 outputFileName = f"{outputFolderName}/output-{launchTimeFormat}.yml"
 outputFileNameComplete = f"{outputFolderName}/output-{launchTimeFormat}-complete.yml"
-outputExample = {
+outputPattern = {
     "url": {},
     "login": {},
     "password": {}
@@ -107,7 +108,7 @@ def main():
         os.mkdir(outputFolderName)
 
     with open(outputFileName, "w") as file:
-        yaml.dump(outputExample, file)
+        yaml.dump(outputPattern, file)
 
     total_days = sum([monthrange(2020, month)[1] for month in range(1, yearRange+1)])
 
