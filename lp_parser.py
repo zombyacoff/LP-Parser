@@ -28,8 +28,8 @@ EXCEPTIONS_LIST = settings["exceptions_list"]
 
 
 OUTPUT_FOLDER_NAME = "output"
-OUTPUTFILE_NAME = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
-OUTPUTFILE_NAME_COMPLETE = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}-complete.yml"
+OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
+OUTPUTFILE_COMPLETE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}-complete.yml"
 OUTPUT_PATTERN = {
     "url": {},
     "login": {},
@@ -92,14 +92,14 @@ def write_output(url: str, login: str, password: str) -> None:
     by the ”parse()” function to a file named ”output-__.yml”, 
     which was previously created in the ”main()” function. 
     """
-    with open(OUTPUTFILE_NAME, "r") as file:
+    with open(OUTPUTFILE_PATH, "r") as file:
         output_data = yaml.safe_load(file)
 
     output_data["url"][write_output.counter] = url
     output_data["login"][write_output.counter] = login
     output_data["password"][write_output.counter] = password   
 
-    with open(OUTPUTFILE_NAME, "w") as file:
+    with open(OUTPUTFILE_PATH, "w") as file:
         yaml.dump(output_data, file)
     
     write_output.counter += 1
@@ -111,7 +111,7 @@ def main():
     if not os.path.exists(OUTPUT_FOLDER_NAME):
         os.mkdir(OUTPUT_FOLDER_NAME)
 
-    with open(OUTPUTFILE_NAME, "w") as file:
+    with open(OUTPUTFILE_PATH, "w") as file:
         yaml.dump(OUTPUT_PATTERN, file)
 
     total_days = sum([monthrange(2020, month)[1] for month in range(1, YEAR_RANGE+1)])
@@ -129,8 +129,8 @@ def main():
                 progress_bar("Parsing...", counter, total_days*OFFSET_VALUE)
                 counter += 1
 
-    os.rename(OUTPUTFILE_NAME, OUTPUTFILE_NAME_COMPLETE)
-    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {OUTPUTFILE_NAME_COMPLETE}")
+    os.rename(OUTPUTFILE_PATH, OUTPUTFILE_COMPLETE_PATH)
+    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {OUTPUTFILE_COMPLETE_PATH}")
 
 
 if __name__ == "__main__":
