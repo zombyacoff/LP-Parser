@@ -14,38 +14,38 @@ launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 with open("settings.yml") as file: 
     settings = yaml.safe_load(file)
 
-exceptions = settings["exceptions"]
-
 offset = settings["offset"]
-offsetBool = offset["offset"]
-offsetValue = offset["value"] if offsetBool else 1
+OFFSET_BOOL = offset["offset"]
+OFFSET_VALUE = offset["value"] if OFFSET_BOOL else 1
 
 releaseDate = settings["release_date"]
-releaseDateBool = releaseDate["release_date"]
-releaseDateYears = releaseDate["years"]
+RELEASEDATE_BOOL = releaseDate["release_date"]
+RELEASEDATE_YEARS = releaseDate["years"]
 
-websitesList = settings["websites_list"]
+WEBSITES_LIST = settings["websites_list"]
 
-emailRegex = r"\S+@\S+\.\S+"
-passwordRegex = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+EXCEPTIONS_LIST = settings["exceptions_list"]
 
-outputFolderName = "output"
-outputFileName = f"{outputFolderName}/output-{launchTimeFormat}.yml"
-outputFileNameComplete = f"{outputFolderName}/output-{launchTimeFormat}-complete.yml"
-outputPattern = {
+
+OUTPUT_FOLDER_NAME = "output"
+OUTPUTFILE_NAME = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
+OUTPUTFILE_NAME_COMPLETE = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}-complete.yml"
+OUTPUT_PATTERN = {
     "url": {},
     "login": {},
     "password": {}
 }
-outputIndex = 1
 
-yearRange = launchTime.month if releaseDateBool and len(releaseDateYears) == 1 and launchTime.year in releaseDateYears else 12 
+EMAIL_REGEX = r"\S+@\S+\.\S+"
+PASSWORD_REGEX = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+
+YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12 
  
 
 def progress_bar(
-    doing_something : str, 
-    current : int, 
-    total : int
+    doing_something: str, 
+    current: int, 
+    total: int
 ) -> None:
     percent = 100 * current/total
     round_percent = round(percent)
@@ -55,16 +55,15 @@ def progress_bar(
           end="\r")
 
 
-def check_url(url : str) -> bool:
+def check_url(url: str) -> bool:
     """
-    The following code checks whether a URL exists. 
+    The following code checks if the URL exists. 
     If the result is positive, the page is parsed 
-    to determine the year the article was published. 
-    This is done to verify whether the conditions 
-    specified in the ”release_date” section 
-    of the ”settings.yml” file have been met. 
-    The function returns a boolean value 
-    indicating whether all conditions have been satisfied.
+    to identify the year the article was written. 
+    This is done to verify if the conditions specified 
+    in the ”settings.yml” file's ”release_date” 
+    section have been satisfied.
+    :return: bool
     """
     global soup
     page = requests.get(url)
@@ -72,68 +71,66 @@ def check_url(url : str) -> bool:
     if page.status_code != 404:
         soup = BeautifulSoup(page.text, "html.parser")
         release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
-        return not releaseDateBool or release_date in releaseDateYears
+        return not RELEASEDATE_BOOL or release_date in RELEASEDATE_YEARS
     return False
 
 
-def parse(url : str) -> None:
+def parse(url: str) -> None:
     website_text = [sentence for sentence in soup.stripped_strings]
 
     for i, current in enumerate(website_text):
-        login = re.findall(emailRegex, current)
-        if login and login[0] not in exceptions:
-            password = website_text[i+1].split()[-1] if re.findall(passwordRegex, website_text[i+1]) else website_text[i+2]
+        login = re.findall(EMAIL_REGEX, current)
+        if login and login[0] not in EXCEPTIONS_LIST:
+            password = website_text[i+1].split()[-1] if re.findall(PASSWORD_REGEX, website_text[i+1]) else website_text[i+2]
             write_output(url, login[0], password)
             break
 
 
-def write_output(url : str, login : str, password : str) -> None:
+def write_output(url: str, login: str, password: str) -> None:
     """
     The following code writes the data generated 
     by the ”parse()” function to a file named ”output-__.yml”, 
     which was previously created in the ”main()” function. 
-    All elements in the output are indexed, 
-    thanks to the ”outputIndex” variable.
     """
-    global outputIndex
-
-    with open(outputFileName, "r") as file:
+    with open(OUTPUTFILE_NAME, "r") as file:
         output_data = yaml.safe_load(file)
 
-    output_data["url"][outputIndex] = url
-    output_data["login"][outputIndex] = login
-    output_data["password"][outputIndex] = password   
+    output_data["url"][write_output.counter] = url
+    output_data["login"][write_output.counter] = login
+    output_data["password"][write_output.counter] = password   
 
-    with open(outputFileName, "w") as file:
+    with open(OUTPUTFILE_NAME, "w") as file:
         yaml.dump(output_data, file)
     
-    outputIndex += 1
+    write_output.counter += 1
+
+write_output.counter = 1
 
 
 def main():
-    if not os.path.exists(outputFolderName):
-        os.mkdir(outputFolderName)
+    if not os.path.exists(OUTPUT_FOLDER_NAME):
+        os.mkdir(OUTPUT_FOLDER_NAME)
 
-    with open(outputFileName, "w") as file:
-        yaml.dump(outputPattern, file)
+    with open(OUTPUTFILE_NAME, "w") as file:
+        yaml.dump(OUTPUT_PATTERN, file)
 
-    total_days = sum([monthrange(2020, month)[1] for month in range(1, yearRange+1)])
+    total_days = sum([monthrange(2020, month)[1] for month in range(1, YEAR_RANGE+1)])
 
     counter = 1
-    for month in range(1, yearRange+1):
+    for month in range(1, YEAR_RANGE+1):
         for day in range(1, monthrange(2020, month)[1]+1):
-            for value in range(offsetValue):
+            for value in range(OFFSET_VALUE):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
                             else url+f"-{month:02}-{day:02}" 
-                            for url in websitesList]
+                            for url in WEBSITES_LIST]
                 for url in url_list:
                     if check_url(url): 
                         parse(url)
-                progress_bar("Parsing...", counter, total_days*offsetValue)
+                progress_bar("Parsing...", counter, total_days*OFFSET_VALUE)
                 counter += 1
 
-    os.rename(outputFileName, outputFileNameComplete)
-    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {outputFileNameComplete}")
+    os.rename(OUTPUTFILE_NAME, OUTPUTFILE_NAME_COMPLETE)
+    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {OUTPUTFILE_NAME_COMPLETE}")
 
 
 if __name__ == "__main__":
