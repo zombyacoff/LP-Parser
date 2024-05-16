@@ -30,7 +30,7 @@ EXCEPTIONS_LIST = settings["exceptions_list"]
 OUTPUT_FOLDER_NAME = "output"
 OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
 OUTPUTFILE_COMPLETE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}-complete.yml"
-OUTPUT_PATTERN = {
+OUTPUTFILE_PATTERN = {
     "url": {},
     "login": {},
     "password": {}
@@ -112,7 +112,7 @@ def main():
         os.mkdir(OUTPUT_FOLDER_NAME)
 
     with open(OUTPUTFILE_PATH, "w") as file:
-        yaml.dump(OUTPUT_PATTERN, file)
+        yaml.dump(OUTPUTFILE_PATTERN, file)
 
     total_days = sum([monthrange(2020, month)[1] for month in range(1, YEAR_RANGE+1)])
 
