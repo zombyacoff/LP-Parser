@@ -1,7 +1,7 @@
 import os
-import re
 import yaml
 import requests
+import rust_module
 from bs4 import BeautifulSoup
 from datetime import datetime
 from calendar import monthrange
@@ -35,6 +35,7 @@ OUTPUTFILE_PATTERN = {
     "login": {},
     "password": {}
 }
+#OUTPUTFILE_PATTERN_KEYS = OUTPUTFILE_PATTERN.keys()
 
 EMAIL_REGEX = r"\S+@\S+\.\S+"
 PASSWORD_REGEX = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
@@ -77,16 +78,20 @@ def check_url(url: str) -> bool:
 
 def parse(url: str) -> None:
     website_text = [sentence for sentence in soup.stripped_strings]
-
+    """
     for i, current in enumerate(website_text):
         login = re.findall(EMAIL_REGEX, current)
         if login and login[0] not in EXCEPTIONS_LIST:
             password = website_text[i+1].split()[-1] if re.findall(PASSWORD_REGEX, website_text[i+1]) else website_text[i+2]
             write_output(url, login[0], password)
             break
+    """
+    result = rust_module.parse(EXCEPTIONS_LIST, website_text)
+    if result[0] != "":
+        write_output(url, result)
 
 
-def write_output(url: str, login: str, password: str) -> None:
+def write_output(url: str, data: list[str]) -> None:
     """
     The following code writes the data generated 
     by the ”parse()” function to a file named ”output-__.yml”, 
@@ -96,8 +101,8 @@ def write_output(url: str, login: str, password: str) -> None:
         output_data = yaml.safe_load(file)
 
     output_data["url"][write_output.counter] = url
-    output_data["login"][write_output.counter] = login
-    output_data["password"][write_output.counter] = password   
+    output_data["login"][write_output.counter] = data[0]
+    output_data["password"][write_output.counter] = data[1] 
 
     with open(OUTPUTFILE_PATH, "w") as file:
         yaml.dump(output_data, file)
