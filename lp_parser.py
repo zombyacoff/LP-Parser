@@ -37,9 +37,6 @@ OUTPUTFILE_PATTERN = {
 }
 #OUTPUTFILE_PATTERN_KEYS = OUTPUTFILE_PATTERN.keys()
 
-EMAIL_REGEX = r"\S+@\S+\.\S+"
-PASSWORD_REGEX = r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-
 YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12 
  
 
@@ -62,7 +59,7 @@ def check_url(url: str) -> bool:
     If the result is positive, the page is parsed 
     to identify the year the article was written. 
     This is done to verify if the conditions specified 
-    in the ”settings.yml” file's ”release_date” 
+    in the "settings.yml" file's "release_date" 
     section have been satisfied.
     :return: bool
     """
@@ -71,31 +68,28 @@ def check_url(url: str) -> bool:
 
     if page.status_code != 404:
         soup = BeautifulSoup(page.text, "html.parser")
-        release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
-        return not RELEASEDATE_BOOL or release_date in RELEASEDATE_YEARS
+        if RELEASEDATE_BOOL:
+            release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
+            return release_date in RELEASEDATE_YEARS
+        return True
     return False
 
 
 def parse(url: str) -> None:
+    """
+    The function can be found in "/rust_module/src/lib.rs".
+    """
     website_text = [sentence for sentence in soup.stripped_strings]
-    """
-    for i, current in enumerate(website_text):
-        login = re.findall(EMAIL_REGEX, current)
-        if login and login[0] not in EXCEPTIONS_LIST:
-            password = website_text[i+1].split()[-1] if re.findall(PASSWORD_REGEX, website_text[i+1]) else website_text[i+2]
-            write_output(url, login[0], password)
-            break
-    """
+
     result = rust_module.parse(EXCEPTIONS_LIST, website_text)
-    if result[0] != "":
-        write_output(url, result)
+    if result[0] != "": write_output(result)
 
 
 def write_output(url: str, data: list[str]) -> None:
     """
     The following code writes the data generated 
-    by the ”parse()” function to a file named ”output-__.yml”, 
-    which was previously created in the ”main()” function. 
+    by the "parse()" function to a file named "output-__.yml", 
+    which was previously created in the "main()" function. 
     """
     with open(OUTPUTFILE_PATH, "r") as file:
         output_data = yaml.safe_load(file)
@@ -128,9 +122,10 @@ def main():
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
                             else url+f"-{month:02}-{day:02}" 
                             for url in WEBSITES_LIST]
+                
                 for url in url_list:
-                    if check_url(url): 
-                        parse(url)
+                    if check_url(url): parse(url)
+
                 progress_bar("Parsing...", counter, total_days*OFFSET_VALUE)
                 counter += 1
 
