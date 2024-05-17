@@ -6,26 +6,20 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from calendar import monthrange
 
-
 launchTime = datetime.now()
 launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 
 # ”settings.yml” parsing
 with open("settings.yml") as file: 
     settings = yaml.safe_load(file)
-
 offset = settings["offset"]
 OFFSET_BOOL = offset["offset"]
 OFFSET_VALUE = offset["value"] if OFFSET_BOOL else 1
-
 releaseDate = settings["release_date"]
 RELEASEDATE_BOOL = releaseDate["release_date"]
 RELEASEDATE_YEARS = releaseDate["years"]
-
 WEBSITES_LIST = settings["websites_list"]
-
 EXCEPTIONS_LIST = settings["exceptions_list"]
-
 
 OUTPUT_FOLDER_NAME = "output"
 OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
