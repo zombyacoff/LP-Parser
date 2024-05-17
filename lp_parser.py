@@ -12,6 +12,7 @@ launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 # ”settings.yml” parsing
 with open("settings.yml") as file: 
     settings = yaml.safe_load(file)
+    
 offset = settings["offset"]
 OFFSET_BOOL = offset["offset"]
 OFFSET_VALUE = offset["value"] if OFFSET_BOOL else 1
