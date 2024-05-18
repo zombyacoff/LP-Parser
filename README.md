@@ -29,7 +29,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     ```
 
 ## Configuration
- - Edit `settings.yml` to configure the parser:
+- Edit `settings.yml` to configure the parser:
     - **websites_list**: List of base URLs to parse.
     - **exceptions_list**: List of emails to exclude from parsing.
     - **offset**: Configure offset for URL generation.
@@ -58,7 +58,7 @@ for_advanced_users:
 
 ## Usage
 ### Windows 
- - Double-click the `run_lp_parser.bat` file to run the program. The following file consists this code:
+- Double-click the `run_lp_parser.bat` file to run the program. The following file consists this code:
    
     ```batch
     @echo off
