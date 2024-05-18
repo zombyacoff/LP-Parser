@@ -65,23 +65,24 @@ for_advanced_users:
     python lp_parser.py
     pause
     ```
+    
 ### Unix-based Systems (Linux, macOS)
 1. Lookup a `run_lp_parser.sh` file with the following content:
-   
     ```bash
     #!/bin/bash
     python3 lp_parser.py
     ```
+    
 2. Make the script executable:
-   
    ```bash
    chmod +x run_lp_parser.sh
    ```
-3. Run the script:
    
+3. Run the script:
    ```bash
    ./run_lp_parser.sh
    ```
+   
 ## Output
 The script generates an output file in the output folder with the parsed results, named based on the launch timestamp.
 The final file will look something like this:
