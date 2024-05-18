@@ -12,8 +12,8 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 - Outputs results in a structured YAML file
 
 ## Requirements
-- Python 3.x
-- Git
+- [Git](https://git-scm.com/downloads)
+- [Python 3.x](https://www.python.org/downloads/)
 - Required packages listed in `requirements.txt`
 
 ## Installation
