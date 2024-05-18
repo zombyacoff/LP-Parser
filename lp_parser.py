@@ -142,7 +142,7 @@ def main():
                 counter += 1
 
     os.rename(OUTPUTFILE_PATH, OUTPUTFILE_COMPLETE_PATH)
-    print(f"Successfull complete! --> {OUTPUTFILE_COMPLETE_PATH}")
+    print(f"Successfully completed!! --> {OUTPUTFILE_COMPLETE_PATH}")
 
 
 if __name__ == "__main__":
