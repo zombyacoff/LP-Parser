@@ -88,8 +88,8 @@ The script generates an output file in the output folder with the parsed results
 The final file will look something like this:
 ```yaml
 login:
-  1. jakeiscool2006
-  2. somelogin
+  1. jakeiscool2006@mail.com
+  2. somelogin@email.com
 password:
   1. greatestpassword3
   2. somepassword7
