@@ -53,7 +53,7 @@ exceptions_list:
   - "admin@example.com"
 for_advanced_users:
   login_regex: "\S+@\S+\.\w+"
-  password_regex: "[^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*"
+  password_regex: "\S*\d\S*"
 ```
 
 ## Usage

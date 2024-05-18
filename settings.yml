@@ -11,4 +11,4 @@ exceptions_list:
   - "" # for telegra.ph: dmca@telegram.org
 for_advanced_users: # DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
   login_regex: \S+@\S+\.\w+ # All emails are a login
-  password_regex: ([^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*) # All words that contain a digit are considered a password
+  password_regex: \S*\d\S* # All words that contain a digit are considered a password
