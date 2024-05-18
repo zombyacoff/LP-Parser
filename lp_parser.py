@@ -31,8 +31,8 @@ OUTPUTFILE_PATTERN = {
     "password": {}
 }
 
-EMAIL_REGEX = r"\S+@\S+\.\w+"
-PASSWORD_REGEX = r"[^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*"
+EMAIL_REGEX = r"\S+@\S+\.\w+" 
+PASSWORD_REGEX = r"[^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*" # All words that follow the login and contain a number are considered to be a password
 
 YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12 
  
