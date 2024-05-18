@@ -35,10 +35,6 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     - **release_date**: Specify if the release date filter should be used and which years to include.
 ### Example of settings.yaml
 ```yaml
-websites_list:
-  - "https://example.com/login"
-exceptions_list:
-  - "admin@example.com"
 offset:
   offset: true
   value: 3
@@ -47,6 +43,10 @@ release_date:
   years:
     - 2022
     - 2023
+websites_list:
+  - "https://example.com/login"
+exceptions_list:
+  - "admin@example.com"
 ```
 
 ## Usage
@@ -62,11 +62,11 @@ login:
   1. jakeiscool2006
   2. somelogin
 password:
-  1. greatestpassword
-  2. somepassword
+  1. greatestpassword3
+  2. somepassword7
 url:
   1. https://website.net/gaming-02-13
-  1. https://website.com/minecraft-06-19
+  2. https://website.com/minecraft-06-19
 ```
 
 
