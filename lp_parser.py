@@ -57,7 +57,6 @@ def progress_bar(
 def process_url(url: str) -> None:
     """
     Sends a GET request to the specified URL and parses the HTML content.
-    
     If the status code of the response is not 404, it extracts the release date from the HTML content.
     If the release date is within the specified range or is a specified year,
     it extracts the website text and calls the 'parse' function to process the text.
@@ -86,8 +85,10 @@ def parse(website_text: list[str]) -> list[str]:
         email_match = re.findall(LOGIN_REGEX, text)
         if email_match and email_match[0] not in EXCEPTIONS_LIST: 
             login = email_match[0]
-            if ":" in login: 
-                password = login.split(":")[1]
+            if ":" in login:
+                data = login.split(":")
+                login = data[0]
+                password = data[1]
                 break
             if i < len(website_text)-4:
                 for k in range(1, 4):
