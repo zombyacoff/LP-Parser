@@ -33,7 +33,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     - **exceptions_list**: List of emails to exclude from parsing.
     - **offset**: Configure offset for URL generation.
     - **release_date**: Specify if the release date filter should be used and which years to include.
-### Example of settings.yaml
+### Example of settings.yml
 ```yaml
 offset:
   offset: true
@@ -68,5 +68,4 @@ url:
   1. https://website.net/gaming-02-13
   2. https://website.com/minecraft-06-19
 ```
-
 
