@@ -36,7 +36,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     - **release_date**: Specify if the release date filter should be used and which years to include.
 - If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
     - **login_regex**: Change what will count as a login, by default we have email.
-    - **password_regex**: Customize what will count as a password, by default we have password that contains number after login.
+    - **password_regex**: Customize what will count as a password, by default we have password that contains digit.
 ### Example of settings.yml
 ```yaml
 offset:
