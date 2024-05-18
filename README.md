@@ -12,7 +12,6 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 - Outputs results in a structured YAML file
 
 ## Requirements
-- [Git](https://git-scm.com/downloads)
 - [Python 3.x](https://www.python.org/downloads/)
 - Required packages listed in `requirements.txt`
 
@@ -29,14 +28,14 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     ```
 
 ## Configuration
-- Edit `settings.yml` to configure the parser:
-    - **websites_list**: List of base URLs to parse.
-    - **exceptions_list**: List of emails to exclude from parsing.
-    - **offset**: Configure offset for URL generation.
-    - **release_date**: Specify if the release date filter should be used and which years to include.
-- If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
-    - **login_regex**: Change what will count as a login, by default we have email.
-    - **password_regex**: Customize what will count as a password, by default we have password that contains digit.
+### Edit `settings.yml` to configure the parser:
+   - **websites_list**: List of base URLs to parse.
+   - **exceptions_list**: List of emails to exclude from parsing.
+   - **offset**: Configure offset for URL generation.
+   - **release_date**: Specify if the release date filter should be used and which years to include.
+#### If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
+   - **login_regex**: Change what will count as a login, by default we have email.
+   - **password_regex**: Customize what will count as a password, by default we have password that contains digit.
 ### Example of settings.yml
 ```yaml
 offset:
