@@ -125,7 +125,8 @@ def main():
 
     write_output.counter = 1
 
-    total_days = sum([monthrange(2020, month)[1] for month in range(1, YEAR_RANGE+1)])
+    total_days = sum([monthrange(2020, month)[1] 
+                      for month in range(1, YEAR_RANGE+1)]) if YEAR_RANGE != 12 else 366
 
     counter = 1
     for month in range(2, YEAR_RANGE+1):
