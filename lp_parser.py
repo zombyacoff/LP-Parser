@@ -21,6 +21,9 @@ RELEASEDATE_BOOL = releaseDate["release_date"]
 RELEASEDATE_YEARS = releaseDate["years"]
 WEBSITES_LIST = settings["websites_list"]
 EXCEPTIONS_LIST = settings["exceptions_list"]
+forAdvancedUsers = settings["for_advanced_users"]
+LOGIN_REGEX = settings["login_regex"]
+PASSWORD_REGEX = settings["password_regex"]
 
 OUTPUT_FOLDER_NAME = "output"
 OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
@@ -30,9 +33,6 @@ OUTPUTFILE_PATTERN = {
     "login": {},
     "password": {}
 }
-
-EMAIL_REGEX = r"\S+@\S+\.\w+" 
-PASSWORD_REGEX = r"[^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*" # All words that follow the login and contain a number are considered to be a password
 
 YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12 
  

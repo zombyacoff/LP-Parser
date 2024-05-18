@@ -9,3 +9,7 @@ websites_list:
   - ""
 exceptions_list:
   - ""
+# DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
+for_advanced_users: 
+  login_regex: "\S+@\S+\.\w+" # All emails are a login
+  password_regex: "[^\r\n\t\f\v'\" ]*\d[^\r\n\t\f\v'\" ]*" # All words that contain a digit are considered a password
