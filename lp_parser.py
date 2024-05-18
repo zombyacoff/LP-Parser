@@ -47,9 +47,10 @@ def progress_bar(
     """
     percent = 100 * current/total
     round_percent = round(percent)
-    bar = round_percent*"█" + (100-round_percent)*"#"
+    bar_length = round_percent//2
+    bar = bar_length*"█" + (50-bar_length)*"#"
 
-    print(f"\r{doing_something} {bar} \033[1;36m[{percent:.2f}%]\033[0m",
+    print(f"\r{doing_something} {bar} [{percent:.2f}%]",
           end="\r")
 
 
@@ -62,7 +63,8 @@ def process_url(url: str) -> None:
     it extracts the website text and calls the 'parse' function to process the text.
     If the result is not an empty string, it calls the 'write_output' function to write the parsed data to the output file.
     """
-    page = requests.get(url)
+    try: page = requests.get(url)
+    except requests.exceptions.RequestException as error: print(error); exit(1)
 
     if page.status_code!= 404:
         soup = BeautifulSoup(page.text, "html.parser")
@@ -70,8 +72,7 @@ def process_url(url: str) -> None:
         if not RELEASEDATE_BOOL or release_date in RELEASEDATE_YEARS:
             website_text = [sentence for sentence in soup.stripped_strings]
             data = parse(website_text)
-            if data[0] != "": 
-                write_output(url, data)
+            if data[0] != "": write_output(url, data)
 
 
 def parse(website_text: list[str]) -> list[str]:
@@ -134,14 +135,13 @@ def main():
                             else url+f"-{month:02}-{day:02}" 
                             for url in WEBSITES_LIST]
                 
-                for url in url_list: 
-                    process_url(url)
+                for url in url_list: process_url(url)
 
                 progress_bar(f"Parsing...", counter, total_days*OFFSET_VALUE)
                 counter += 1
 
     os.rename(OUTPUTFILE_PATH, OUTPUTFILE_COMPLETE_PATH)
-    print(f"\n\n\033[1;32mSuccessfull complete!\033[0m --> {OUTPUTFILE_COMPLETE_PATH}")
+    print(f"Successfull complete! --> {OUTPUTFILE_COMPLETE_PATH}")
 
 
 if __name__ == "__main__":
