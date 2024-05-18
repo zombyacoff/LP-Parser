@@ -22,8 +22,8 @@ RELEASEDATE_YEARS = releaseDate["years"]
 WEBSITES_LIST = settings["websites_list"]
 EXCEPTIONS_LIST = settings["exceptions_list"]
 forAdvancedUsers = settings["for_advanced_users"]
-LOGIN_REGEX = settings["login_regex"]
-PASSWORD_REGEX = settings["password_regex"]
+LOGIN_REGEX = rf"{forAdvancedUsers["login_regex"]}"
+PASSWORD_REGEX = rf"{forAdvancedUsers["password_regex"]}"
 
 OUTPUT_FOLDER_NAME = "output"
 OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
@@ -82,7 +82,7 @@ def parse(website_text: list[str]) -> list[str]:
     password = ""
 
     for i, text in enumerate(website_text):
-        email_match = re.findall(EMAIL_REGEX, text)
+        email_match = re.findall(LOGIN_REGEX, text)
         if email_match and email_match[0] not in EXCEPTIONS_LIST: 
             login = email_match[0]
             if ":" in login: 
