@@ -1,7 +1,8 @@
 import os
 import yaml
 import re
-import requests
+import aiohttp
+import asyncio
 from bs4 import BeautifulSoup
 from datetime import datetime
 from calendar import monthrange
@@ -34,39 +35,24 @@ OUTPUTFILE_PATTERN = {
     "password": {}
 }
 
-YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12 
- 
-
-def progress_bar(
-    doing_something: str, 
-    current: int, 
-    total: int
-) -> None:
-    """
-    This function prints a progress bar with the specified doing_something, current, and total values.
-    """
-    percent = 100 * current/total
-    round_percent = round(percent)
-    bar_length = round_percent//2
-    bar = bar_length*"█" + (50-bar_length)*"#"
-
-    print(f"\r{doing_something} {bar} [{percent:.2f}%]",
-          end="\r")
+YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12
 
 
-def process_url(url: str) -> None:
+async def process_url(url: str) -> None:
     """
     Sends a GET request to the specified URL and parses the HTML content.
-    If the status code of the response is not 404, it extracts the release date from the HTML content.
+    If the status code of the response is not 404, 
+    it extracts the release date from the HTML content.
     If the release date is within the specified range or is a specified year,
     it extracts the website text and calls the 'parse' function to process the text.
-    If the result is not an empty string, it calls the 'write_output' function to write the parsed data to the output file.
+    If the result is not an empty string, it calls the 'write_output' 
+    function to write the parsed data to the output file.
     """
-    try: page = requests.get(url)
-    except requests.exceptions.RequestException as error: print(error); exit(1)
+    async with aiohttp.ClientSession() as session:
+        page = await session.get(url)
 
-    if page.status_code!= 404:
-        soup = BeautifulSoup(page.text, "html.parser")
+    if page.status != 404:
+        soup = BeautifulSoup(await page.text(), "html.parser")
         release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
         if not RELEASEDATE_BOOL or release_date in RELEASEDATE_YEARS:
             website_text = [sentence for sentence in soup.stripped_strings]
@@ -117,7 +103,7 @@ def write_output(url: str, data: list[str]) -> None:
     write_output.counter += 1
 
 
-def main():
+async def main():
     if not os.path.exists(OUTPUT_FOLDER_NAME):
         os.mkdir(OUTPUT_FOLDER_NAME)
 
@@ -126,25 +112,23 @@ def main():
 
     write_output.counter = 1
 
-    total_days = sum([monthrange(2020, month)[1] 
-                      for month in range(1, YEAR_RANGE+1)]) if YEAR_RANGE != 12 else 366
-
-    counter = 1
+    processes = []
     for month in range(2, YEAR_RANGE+1):
         for day in range(1, monthrange(2020, month)[1]+1):
             for value in range(OFFSET_VALUE):
                 url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
                             else url+f"-{month:02}-{day:02}" 
                             for url in WEBSITES_LIST]
-                
-                for url in url_list: process_url(url)
-
-                progress_bar(f"Parsing...", counter, total_days*OFFSET_VALUE)
-                counter += 1
+                for url in url_list:
+                    process = asyncio.create_task(process_url(url))
+                    processes.append(process)
+    
+    print("Parsing... ")
+    await asyncio.gather(*processes)
 
     os.rename(OUTPUTFILE_PATH, OUTPUTFILE_COMPLETE_PATH)
-    print(f"Successfully completed!! --> {OUTPUTFILE_COMPLETE_PATH}")
+    print(f"Successfully completed! ({datetime.now() - launchTime}) --> {OUTPUTFILE_COMPLETE_PATH}")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
