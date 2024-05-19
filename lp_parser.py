@@ -101,24 +101,24 @@ class LPParser:
         self.output_file = output_file
 
     async def process_url(self, url: str):
-        try:
-            async with aiohttp.ClientSession() as session:
-                page = await session.get(url)
-        except aiohttp.ClientError as error:
-            logging.error(f"Accessing URL: {url}, {error}")
+        async with aiohttp.ClientSession() as session:
+            page = await session.get(url)
+        if page.status != 200:
             return
-        if page.status != 404:
-            soup = BeautifulSoup(await page.text(), "html.parser")
-            release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
-            if not self.settings.release_date_bool or release_date in self.settings.release_date:
-                website_text = [sentence for sentence in soup.stripped_strings]
-                data = self.parse(website_text) + [url]
-                if data[1] != "": 
-                    self.output_file.write_output(data)
+        
+        soup = BeautifulSoup(await page.text(), "html.parser")
+        if self.settings.release_date_bool:
+            time_element = soup.select_one("time")
+            release_date = int(time_element.get_text("\n", strip=True)[-4:]) if time_element else 2024
+            if release_date in self.settings.release_date:
+                self.parse(url, soup)        
+        else: self.parse(url, soup)
 
-    def parse(self, website_text: list[str]) -> list[str]:
+    def parse(self, url: str, soup: BeautifulSoup):
+        website_text = [sentence for sentence in soup.stripped_strings]
         login = ""
         password = ""
+
         for i, text in enumerate(website_text):
             email_match = self.settings.login_regex.findall(text)
             if email_match and email_match[0] not in self.settings.exceptions_list: 
@@ -134,7 +134,11 @@ class LPParser:
                         if password_match: 
                             password = password_match[0]
                             break
-        return [login, password]
+
+        parsed_data = [login, password]
+        parsed_data.append(url)
+        if login != "": 
+            self.output_file.write_output(parsed_data)
 
     async def main(self):
         processes = []  
@@ -147,7 +151,7 @@ class LPParser:
                     for url in url_list:
                         process = asyncio.create_task(self.process_url(url))
                         processes.append(process)
-        print("Parsing...")
+                        
         await asyncio.gather(*processes)
 
 
@@ -166,12 +170,13 @@ def main():
             },
             "parser-output"
         )
+        
+        logging.info("\rParsing...")
         lpparser = LPParser(settings, output_file)
         asyncio.run(lpparser.main())
-
         output_file.finalize_output()
-        logging.info(f"Successfully completed! ({datetime.now() - launch_time}) --> {output_file.output_file_complete_path}")
-
+        logging.info(f"\rSuccessfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_complete_path}")
+    
     except Exception as error:
         logging.error(error)
 
