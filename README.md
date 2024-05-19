@@ -17,12 +17,10 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 - Required packages listed in `requirements.txt`
 
 ## Installation
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/zombyacoff/LP-Parser.git
-    ```
-
-2. Install dependencies:
+1. Download the release and extract the zip.
+   
+3. Go to the directory and install dependencies:
+   
     ```bash
     cd LP-Parser
     pip install -r requirements.txt
