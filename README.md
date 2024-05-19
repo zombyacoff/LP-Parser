@@ -10,6 +10,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 - Checks URL availability and extracts login credentials
 - Supports offset values for URL generation
 - Outputs results in a structured YAML file
+- Async proccessing 
 
 ## Requirements
 - [Python 3.x](https://www.python.org/downloads/)
@@ -51,7 +52,7 @@ websites_list:
 exceptions_list:
   - "admin@example.com"
 for_advanced_users:
-  login_regex: "\S+@\S+\.\w+"
+  login_regex: "\S+@\S+\.\S+"
   password_regex: "\S*\d\S*"
 ```
 
