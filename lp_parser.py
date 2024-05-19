@@ -1,12 +1,11 @@
-import os
-import yaml
-import re
-import logging
-import aiohttp
 import asyncio
-from bs4 import BeautifulSoup
+import os
+import re
 from datetime import datetime
 from calendar import monthrange
+import aiohttp
+from bs4 import BeautifulSoup
+import yaml
 
 
 class Settings:
@@ -156,29 +155,23 @@ class LPParser:
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
     launch_time = datetime.now()
-
-    try:
-        settings = Settings(launch_time)
-        output_file = OutputFile(
-            launch_time, 
-            {
-                "login": {},
-                "password": {},
-                "url": {}
-            },
-            "parser-output"
-        )
+    settings = Settings(launch_time)
+    output_file = OutputFile(
+        launch_time, 
+        {
+            "login": {},
+            "password": {},
+            "url": {}
+        },
+        "parser-output"
+    )
         
-        logging.info("\rParsing...")
-        lpparser = LPParser(settings, output_file)
-        asyncio.run(lpparser.main())
-        output_file.finalize_output()
-        logging.info(f"\rSuccessfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_complete_path}")
-    
-    except Exception as error:
-        logging.error(error)
+    print("Parsing...")
+    lpparser = LPParser(settings, output_file)
+    asyncio.run(lpparser.main())
+    output_file.finalize_output()
+    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_complete_path}")
 
 
 if __name__ == "__main__":
