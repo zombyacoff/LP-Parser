@@ -1,134 +1,181 @@
 import os
 import yaml
 import re
+import logging
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 from datetime import datetime
 from calendar import monthrange
 
-launchTime = datetime.now()
-launchTimeFormat = launchTime.strftime("%d-%m-%Y-%H-%M-%S")
 
-# ”settings.yml” parsing
-with open("settings.yml") as file: 
-    settings = yaml.safe_load(file)
+class Settings:
+    """
+    Initializes settings based on a given 
+    launch time and optional file name.
+    Loads settings from a YAML file and parses them.
+    Calculates the year range based on the 
+    launch time and release date settings.
+    """
+    def __init__(
+        self, 
+        launch_time: datetime, 
+        file_name="settings.yml"
+    ):
+        self.__load_settings(file_name)
+        self.__parse_settings()
+        self.year_range = self.__year_range(launch_time)
+
+    def __load_settings(self, file_name):
+        with open(file_name) as file:
+            self.settings = yaml.safe_load(file)
+
+    def __parse_settings(self):
+        self.offset_bool = self.settings["offset"]["offset"]
+        self.offset = self.settings["offset"]["value"] if self.offset_bool else 1
+        self.release_date_bool = self.settings["release_date"]["release_date"]
+        self.release_date = self.settings["release_date"]["years"]
+        self.websites_list = self.settings["websites_list"]
+        self.exceptions_list = self.settings["exceptions_list"]
+        self.login_regex = re.compile(rf"{self.settings["for_advanced_users"]["login_regex"]}")
+        self.password_regex = re.compile(rf"{self.settings["for_advanced_users"]["password_regex"]}")
+
+    def __year_range(self, launch_time):
+        if (self.release_date_bool
+            and len(self.release_date) == 1
+            and launch_time in self.release_date):
+            return launch_time.month
+        return 12
     
-offset = settings["offset"]
-OFFSET_BOOL = offset["offset"]
-OFFSET_VALUE = offset["value"] if OFFSET_BOOL else 1
-releaseDate = settings["release_date"]
-RELEASEDATE_BOOL = releaseDate["release_date"]
-RELEASEDATE_YEARS = releaseDate["years"]
-WEBSITES_LIST = settings["websites_list"]
-EXCEPTIONS_LIST = settings["exceptions_list"]
-forAdvancedUsers = settings["for_advanced_users"]
-LOGIN_REGEX = rf"{forAdvancedUsers["login_regex"]}"
-PASSWORD_REGEX = rf"{forAdvancedUsers["password_regex"]}"
 
-OUTPUT_FOLDER_NAME = "output"
-OUTPUTFILE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}.yml"
-OUTPUTFILE_COMPLETE_PATH = f"{OUTPUT_FOLDER_NAME}/output-{launchTimeFormat}-complete.yml"
-OUTPUTFILE_PATTERN = {
-    "url": {},
-    "login": {},
-    "password": {}
-}
-
-YEAR_RANGE = launchTime.month if RELEASEDATE_BOOL and len(RELEASEDATE_YEARS) == 1 and launchTime.year in RELEASEDATE_YEARS else 12
-
-
-async def process_url(url: str) -> None:
+class OutputFile:
     """
-    Sends a GET request to the specified URL and parses the HTML content.
-    If the status code of the response is not 404, 
-    it extracts the release date from the HTML content.
-    If the release date is within the specified range or is a specified year,
-    it extracts the website text and calls the 'parse' function to process the text.
-    If the result is not an empty string, it calls the 'write_output' 
-    function to write the parsed data to the output file.
+    Class to handle output file operations including 
+    creating folders, writing output data, 
+    and finalizing the output file.
     """
-    async with aiohttp.ClientSession() as session:
-        page = await session.get(url)
+    def __init__ (
+        self, 
+        launch_time: datetime, 
+        output_file_pattern: dict, 
+        folder_name: str
+    ):
+        self.folder_name = folder_name
+        self.launch_time_format = launch_time.strftime("%d-%m-%Y-%H-%M-%S")
+        self.output_file_path = f"{self.folder_name}/{self.launch_time_format}.yml"
+        self.output_file_complete_path = f"{self.folder_name}/{self.launch_time_format}-complete.yml"
+        self.output_file_pattern = output_file_pattern
+        self.index = 1
+        self.__create_folder()
 
-    if page.status != 404:
-        soup = BeautifulSoup(await page.text(), "html.parser")
-        release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
-        if not RELEASEDATE_BOOL or release_date in RELEASEDATE_YEARS:
-            website_text = [sentence for sentence in soup.stripped_strings]
-            data = parse(website_text)
-            if data[0] != "": write_output(url, data)
-
-
-def parse(website_text: list[str]) -> list[str]:
-    """
-    This function parses the website text and returns the login and password.
-    """
-    login = ""
-    password = ""
-
-    for i, text in enumerate(website_text):
-        email_match = re.findall(LOGIN_REGEX, text)
-        if email_match and email_match[0] not in EXCEPTIONS_LIST: 
-            login = email_match[0]
-            if ":" in login:
-                data = login.split(":")
-                login = data[0]
-                password = data[1]
-                break
-            if i < len(website_text)-4:
-                for k in range(1, 4):
-                    password_match = re.findall(PASSWORD_REGEX, website_text[i+k])
-                    if password_match: 
-                        password = password_match[0]
-                        break
-
-    return [login, password]
-
-
-def write_output(url: str, data: list[str]) -> None:
-    """
-    This function writes the parsed data to the output file.
-    """
-    with open(OUTPUTFILE_PATH, "r") as file:
-        output_data = yaml.safe_load(file)
-
-    output_data["url"][write_output.counter] = url
-    output_data["login"][write_output.counter] = data[0]
-    output_data["password"][write_output.counter] = data[1] 
-
-    with open(OUTPUTFILE_PATH, "w") as file:
-        yaml.dump(output_data, file)
+    def __create_folder(self):
+        if not os.path.exists(self.folder_name):
+            os.mkdir(self.folder_name)
+        with open(self.output_file_path, "w") as file:
+            yaml.dump(self.output_file_pattern, file)
     
-    write_output.counter += 1
+    def write_output(self, data: list[str]):
+        with open(self.output_file_path, "r") as file:
+            output_data = yaml.safe_load(file)
+        for i, key in enumerate(output_data):
+            output_data[key][self.index] = data[i]
+        with open(self.output_file_path, "w") as file:
+            yaml.dump(output_data, file)
+        self.index += 1
 
-
-async def main():
-    if not os.path.exists(OUTPUT_FOLDER_NAME):
-        os.mkdir(OUTPUT_FOLDER_NAME)
-
-    with open(OUTPUTFILE_PATH, "w") as file:
-        yaml.dump(OUTPUTFILE_PATTERN, file)
-
-    write_output.counter = 1
-
-    processes = []
-    for month in range(2, YEAR_RANGE+1):
-        for day in range(1, monthrange(2020, month)[1]+1):
-            for value in range(OFFSET_VALUE):
-                url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
-                            else url+f"-{month:02}-{day:02}" 
-                            for url in WEBSITES_LIST]
-                for url in url_list:
-                    process = asyncio.create_task(process_url(url))
-                    processes.append(process)
+    def finalize_output(self):
+        os.rename(self.output_file_path, self.output_file_complete_path)
     
-    print("Parsing... ")
-    await asyncio.gather(*processes)
 
-    os.rename(OUTPUTFILE_PATH, OUTPUTFILE_COMPLETE_PATH)
-    print(f"Successfully completed! ({datetime.now() - launchTime}) --> {OUTPUTFILE_COMPLETE_PATH}")
+class LPParser:
+    """
+    Asynchronous class for parsing URLs 
+    based on settings and writing output data.
+    This class includes methods for processing URLs, 
+    parsing website text to extract login and password information,
+    and running the main asynchronous 
+    process to parse multiple URLs concurrently.
+    """
+    def __init__(self, settings, output_file):
+        self.settings = settings
+        self.output_file = output_file
+
+    async def process_url(self, url: str):
+        try:
+            async with aiohttp.ClientSession() as session:
+                page = await session.get(url)
+        except aiohttp.ClientError as error:
+            logging.error(f"Accessing URL: {url}, {error}")
+            return
+        if page.status != 404:
+            soup = BeautifulSoup(await page.text(), "html.parser")
+            release_date = int(soup.select_one("time").get_text("\n", strip=True)[-4:])
+            if not self.settings.release_date_bool or release_date in self.settings.release_date:
+                website_text = [sentence for sentence in soup.stripped_strings]
+                data = self.parse(website_text) + [url]
+                if data[1] != "": 
+                    self.output_file.write_output(data)
+
+    def parse(self, website_text: list[str]) -> list[str]:
+        login = ""
+        password = ""
+        for i, text in enumerate(website_text):
+            email_match = self.settings.login_regex.findall(text)
+            if email_match and email_match[0] not in self.settings.exceptions_list: 
+                login = email_match[0]
+                if ":" in login:
+                    data = login.split(":")
+                    login = data[0]
+                    password = data[1]
+                    break
+                if i < len(website_text)-4:
+                    for k in range(1, 4):
+                        password_match = self.settings.password_regex.findall(website_text[i+k])
+                        if password_match: 
+                            password = password_match[0]
+                            break
+        return [login, password]
+
+    async def main(self):
+        processes = []  
+        for month in range(1, self.settings.year_range+1):
+            for day in range(1, monthrange(2020, month)[1]+1):
+                for value in range(self.settings.offset):
+                    url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
+                                else url+f"-{month:02}-{day:02}" 
+                                for url in self.settings.websites_list]
+                    for url in url_list:
+                        process = asyncio.create_task(self.process_url(url))
+                        processes.append(process)
+        print("Parsing...")
+        await asyncio.gather(*processes)
+
+
+def main():
+    logging.basicConfig(level=logging.INFO)
+    launch_time = datetime.now()
+
+    try:
+        settings = Settings(launch_time)
+        output_file = OutputFile(
+            launch_time, 
+            {
+                "login": {},
+                "password": {},
+                "url": {}
+            },
+            "parser-output"
+        )
+        print(output_file)
+        lpparser = LPParser(settings, output_file)
+        asyncio.run(lpparser.main())
+
+        output_file.finalize_output()
+        logging.info(f"Successfully completed! ({datetime.now() - launch_time}) --> {output_file.output_file_complete_path}")
+
+    except Exception as error:
+        logging.error(error)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
