@@ -166,7 +166,6 @@ def main():
             },
             "parser-output"
         )
-        print(output_file)
         lpparser = LPParser(settings, output_file)
         asyncio.run(lpparser.main())
 
