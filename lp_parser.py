@@ -134,7 +134,7 @@ class LPParser:
             for month in range(1, self.config.year_range+1):
                 for day in range(1, monthrange(2020, month)[1]+1):
                     for value in range(self.config.offset):
-                        url_list = [url+f"-{month:02}-{day:02}-{value}" if value > 0 
+                        url_list = [url+f"-{month:02}-{day:02}-{value+1}" if value > 0 
                                     else url+f"-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
