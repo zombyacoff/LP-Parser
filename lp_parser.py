@@ -155,8 +155,7 @@ def main():
 
     print("Parsing...")
     asyncio.run(parser.main())
-    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})
-          \n>>> {output_file.output_file_path}")
+    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_path}")
 
 
 if __name__ == "__main__":
