@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+import yaml
 import asyncio
 import os
 import re
@@ -41,7 +44,7 @@ class Config:
     
 
 class OutputFile:
-    def __init__ (
+    def __init__(
         self, 
         launch_time: datetime, 
         output_file_pattern: dict, 
@@ -49,28 +52,24 @@ class OutputFile:
     ):
         self.folder_name = folder_name
         self.launch_time_format = launch_time.strftime("%d-%m-%Y-%H-%M-%S")
-        self.output_file_path = f"{self.folder_name}/{self.launch_time_format}.yml"
-        self.output_file_complete_path = f"{self.folder_name}/{self.launch_time_format}-complete.yml"
-        self.output_file_pattern = output_file_pattern
+        self.output_file_name = f"{self.launch_time_format}.yml"
+        self.output_file_path = os.path.join(self.folder_name, self.output_file_name)
+        self.output_data = output_file_pattern
         self.index = 1
-        self._create_file()
+        self._create_folder()
 
-    def _create_file(self):
+    def _create_folder(self):
         os.makedirs(self.folder_name, exist_ok=True)
-        with open(self.output_file_path, "w") as file:
-            yaml.dump(self.output_file_pattern, file)
-    
+
     def write_output(self, data: list[str]):
-        with open(self.output_file_path, "r") as file:
-            output_data = yaml.safe_load(file)
-        for i, key in enumerate(output_data):   
-            output_data[key][self.index] = data[i]
-        with open(self.output_file_path, "w") as file:
-            yaml.dump(output_data, file)
+        for i, key in enumerate(self.output_data):   
+            self.output_data[key][self.index] = data[i]
         self.index += 1
 
-    def finalize_output(self):
-        os.rename(self.output_file_path, self.output_file_complete_path)
+    def complete_output(self):
+        with open(self.output_file_path, "w") as file:
+            yaml.dump(self.output_data, file)
+
     
 
 class LPParser:
@@ -154,12 +153,12 @@ def main():
             "url": {}
         }
     )
-    lpparser = LPParser(config, output_file)
+    parser = LPParser(config, output_file)
 
     print("Parsing...")
-    asyncio.run(lpparser.main())
-    output_file.finalize_output()
-    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_complete_path}")
+    asyncio.run(parser.main())
+    output_file.complete_output()
+    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_path}")
 
 
 if __name__ == "__main__":
