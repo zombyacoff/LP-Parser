@@ -1,6 +1,6 @@
 offset:
   offset: false
-  value: 2 #minimum 2
+  value: 2 # minimum 2
 release_date:
   release_date: false
   years:
