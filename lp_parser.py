@@ -68,7 +68,6 @@ class OutputFile:
             yaml.dump(self.output_data, file)
 
     
-
 class LPParser:
     def __init__(
         self, 
