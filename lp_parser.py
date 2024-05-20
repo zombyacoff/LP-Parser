@@ -137,6 +137,7 @@ class LPParser:
                             process = asyncio.create_task(self._process_url(url, session))
                             processes.append(process)                     
             await asyncio.gather(*processes)
+        self.output_file.complete_output()
 
 
 def main():
@@ -154,8 +155,8 @@ def main():
 
     print("Parsing...")
     asyncio.run(parser.main())
-    output_file.complete_output()
-    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})\n>>> {output_file.output_file_path}")
+    print(f"Successfully completed! (Time elapsed: {datetime.now() - launch_time})
+          \n>>> {output_file.output_file_path}")
 
 
 if __name__ == "__main__":
