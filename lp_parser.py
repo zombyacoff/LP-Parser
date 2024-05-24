@@ -34,7 +34,7 @@ class Config:
     def _calculate_year_range(self):
         if (self.release_date_bool
             and len(self.release_date) == 1
-            and LAUNCH_TIME in self.release_date):
+            and LAUNCH_TIME.year in self.release_date):
             return LAUNCH_TIME.month
         return 12
     
