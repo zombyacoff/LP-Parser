@@ -69,7 +69,7 @@ class LPParser:
         self.config = config
         self.output_file = output_file
 
-    async def _check_url(self, url, session):
+    async def _process_url(self, url, session):
         page = await session.get(url)
         if page.status != 200:
             return   
@@ -109,7 +109,7 @@ class LPParser:
                                     else url+f"-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
-                            process = asyncio.create_task(self._check_url(url, session))
+                            process = asyncio.create_task(self._process_url(url, session))
                             processes.append(process)                     
             await asyncio.gather(*processes)
         self.output_file.complete_output()
