@@ -9,11 +9,9 @@ import yaml
 
 
 class Config:
-    def __init__(
-        self, 
-        launch_time: datetime, 
-        config_path="config/settings.yml"
-    ):
+    def __init__(self, 
+                 launch_time, 
+                 config_path="config/settings.yml"):
         self._load_settings(config_path)
         self._parse_settings()
         self.year_range = self._calculate_year_range(launch_time)
@@ -41,12 +39,10 @@ class Config:
     
 
 class OutputFile:
-    def __init__(
-        self, 
-        launch_time: datetime, 
-        output_file_pattern: dict, 
-        folder_name="parser-output"
-    ):
+    def __init__(self, 
+                 launch_time, 
+                 output_file_pattern, 
+                 folder_name="parser-output"):
         self.folder_name = folder_name
         self.launch_time_format = launch_time.strftime("%d-%m-%Y-%H-%M-%S")
         self.output_file_name = f"{self.launch_time_format}.yml"
@@ -58,7 +54,7 @@ class OutputFile:
     def _create_folder(self):
         os.makedirs(self.folder_name, exist_ok=True)
 
-    def write_output(self, data: list[str]):
+    def write_output(self, data):
         for i, key in enumerate(self.output_data):   
             self.output_data[key][self.index] = data[i]
         self.index += 1
@@ -69,59 +65,39 @@ class OutputFile:
 
     
 class LPParser:
-    def __init__(
-        self, 
-        config: Config, 
-        output_file: OutputFile
-    ):
+    def __init__(self, config, output_file):
         self.config = config
         self.output_file = output_file
 
-    async def _process_url(
-        self, 
-        url: str,
-        session: aiohttp.ClientSession
-    ):
+    async def _check_url(self, url, session):
         page = await session.get(url)
         if page.status != 200:
-            return
-        
+            return   
         soup = BeautifulSoup(await page.text(), "html.parser")
         if self.config.release_date_bool:
             time_element = soup.select_one("time")
             release_date = int(time_element.get_text("\n", strip=True)[-4:]) if time_element else 2024
-            if release_date in self.config.release_date:
-                self._parse(url, soup)        
-        else: 
-            self._parse(url, soup)
+            if not release_date in self.config.release_date:  
+                return   
+        self._parse(url, soup)
 
-    def _parse(
-        self, 
-        url: str, 
-        soup: BeautifulSoup
-    ):
+    def _parse(self, url, soup):
         website_text = [sentence for sentence in soup.stripped_strings]
         login = password = ""
-
-        for i, text in enumerate(website_text):
-            email_match = self.config.login_regex.search(text)
+        for i, current in enumerate(website_text):
+            email_match = self.config.login_regex.search(current)
             if email_match and email_match.group() not in self.config.exceptions_list: 
                 login = email_match.group()
                 if ":" in login:
-                    data = login.split(":")
-                    login = data[0]; password = data[1]
+                    login, password = login.split(":", 1)
                     break
-                if i < len(website_text)-4:
-                    for k in range(1, 4):
-                        password_match = self.config.password_regex.search(website_text[i+k])
-                        if password_match: 
-                            password = password_match.group()
-                            break
-
-        parsed_data = [login, password]
-        parsed_data.append(url)
-        if login != "": 
-            self.output_file.write_output(parsed_data)
+                for k in range(1, min(4, len(website_text) - i)):
+                    password_match = self.config.password_regex.search(website_text[i+k])
+                    if password_match: 
+                        password = password_match.group()
+                        break
+        if login: 
+            self.output_file.write_output([login, password, url])
 
     async def main(self):
         async with aiohttp.ClientSession() as session:
@@ -133,7 +109,7 @@ class LPParser:
                                     else url+f"-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
-                            process = asyncio.create_task(self._process_url(url, session))
+                            process = asyncio.create_task(self._check_url(url, session))
                             processes.append(process)                     
             await asyncio.gather(*processes)
         self.output_file.complete_output()

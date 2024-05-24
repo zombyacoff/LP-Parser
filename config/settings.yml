@@ -1,14 +1,26 @@
 offset:
   offset: false
-  value: 2 # minimum 2
+  # minimum 2
+  value: 2 
+
 release_date:
   release_date: false
   years:
     - 2024
+
+# example: https://telegra.ph/steam
 websites_list:
   - ""
+
+# for telegra.ph: dmca@telegram.org
 exceptions_list:
-  - "" # for telegra.ph: dmca@telegram.org
-for_advanced_users: # DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
-  login_regex: \S+@\S+\.\S+ # All emails are a login
-  password_regex: \S*\d\S* # All words that contain a digit are considered a password
+  - "" 
+
+# DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
+for_advanced_users:
+
+  # All emails are a login
+  login_regex: \S+@\S+\.\S+
+  
+   # All words that contain a digit are considered a password
+  password_regex: \S*\d\S*
