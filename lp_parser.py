@@ -8,13 +8,14 @@ from bs4 import BeautifulSoup
 import yaml
 
 
+LAUNCH_TIME = datetime.now()
+
+
 class Config:
-    def __init__(self, 
-                 launch_time, 
-                 config_path="config/settings.yml"):
+    def __init__(self, config_path="config/settings.yml"):
         self._load_settings(config_path)
         self._parse_settings()
-        self.year_range = self._calculate_year_range(launch_time)
+        self.year_range = self._calculate_year_range()
 
     def _load_settings(self, config_path):
         with open(config_path) as file:
@@ -30,21 +31,20 @@ class Config:
         self.login_regex = re.compile(rf"{self.config["for_advanced_users"]["login_regex"]}")
         self.password_regex = re.compile(rf"{self.config["for_advanced_users"]["password_regex"]}")
 
-    def _calculate_year_range(self, launch_time):
+    def _calculate_year_range(self):
         if (self.release_date_bool
             and len(self.release_date) == 1
-            and launch_time in self.release_date):
-            return launch_time.month
+            and LAUNCH_TIME in self.release_date):
+            return LAUNCH_TIME.month
         return 12
     
 
 class OutputFile:
     def __init__(self, 
-                 launch_time, 
                  output_file_pattern, 
                  folder_name="parser-output"):
         self.folder_name = folder_name
-        self.launch_time_format = launch_time.strftime("%d-%m-%Y-%H-%M-%S")
+        self.launch_time_format = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
         self.output_file_name = f"{self.launch_time_format}.yml"
         self.output_file_path = os.path.join(self.folder_name, self.output_file_name)
         self.output_data = output_file_pattern
@@ -70,7 +70,10 @@ class LPParser:
         self.output_file = output_file
 
     async def _process_url(self, url, session):
-        page = await session.get(url)
+        try:
+            page = await session.get(url)
+        except aiohttp.client_exceptions.InvalidURL:
+            raise ValueError("Invalid websites list in config file")
         if page.status != 200:
             return   
         soup = BeautifulSoup(await page.text(), "html.parser")
@@ -100,26 +103,29 @@ class LPParser:
             self.output_file.write_output([login, password, url])
 
     async def main(self):
-        async with aiohttp.ClientSession() as session:
-            processes = []  
-            for month in range(1, self.config.year_range+1):
-                for day in range(1, monthrange(2020, month)[1]+1):
-                    for value in range(self.config.offset):
-                        url_list = [url+f"-{month:02}-{day:02}-{value+1}" if value > 0 
-                                    else url+f"-{month:02}-{day:02}" 
-                                    for url in self.config.websites_list]
-                        for url in url_list:
-                            process = asyncio.create_task(self._process_url(url, session))
-                            processes.append(process)                     
-            await asyncio.gather(*processes)
-        self.output_file.complete_output()
+        try:
+            async with aiohttp.ClientSession() as session:
+                processes = []  
+                for month in range(1, self.config.year_range+1):
+                    for day in range(1, monthrange(2020, month)[1]+1):
+                        for value in range(self.config.offset):
+                            url_list = [url+f"-{month:02}-{day:02}-{value+1}" if value > 0 
+                                        else url+f"-{month:02}-{day:02}" 
+                                        for url in self.config.websites_list]
+                            for url in url_list:
+                                process = asyncio.create_task(self._process_url(url, session))
+                                processes.append(process)                     
+                await asyncio.gather(*processes)
+            self.output_file.complete_output()
+            elapsed_time = datetime.now() - LAUNCH_TIME
+            return f"Successfully completed! (Time elapsed: {elapsed_time})\n>>> {self.output_file.output_file_path}"
+        except ValueError as error:
+            return error
 
 
 def main():
-    launch_time = datetime.now()
-    config = Config(launch_time)
+    config = Config()
     output_file = OutputFile(
-        launch_time, 
         {
             "login": {},
             "password": {},
@@ -129,9 +135,7 @@ def main():
     parser = LPParser(config, output_file)
 
     print("Parsing...")
-    asyncio.run(parser.main())
-    elapsed_time = datetime.now() - launch_time
-    print(f"Successfully completed! (Time elapsed: {elapsed_time})\n>>> {output_file.output_file_path}")
+    print(asyncio.run(parser.main()))
 
 
 if __name__ == "__main__":
