@@ -63,7 +63,7 @@ class OutputFile:
         with open(self.output_file_path, "w") as file:
             yaml.dump(self.output_data, file)
 
-    
+
 class LPParser:
     def __init__(self, config, output_file):
         self.config = config
@@ -99,8 +99,8 @@ class LPParser:
                     if password_match: 
                         password = password_match.group()
                         break
-        if login: 
-            self.output_file.write_output([login, password, url])
+        parsed_data = [login, password]
+        if login: self.output_file.write_output(parsed_data + [url])
 
     async def main(self):
         try:
