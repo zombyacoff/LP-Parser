@@ -86,7 +86,7 @@ class LPParser:
 
     def _parse(self, url, soup):
         website_text = [sentence for sentence in soup.stripped_strings]
-        login = password = ""
+        login = password = ""       
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
             if email_match and email_match.group() not in self.config.exceptions_list: 
@@ -100,11 +100,13 @@ class LPParser:
                     if password_match: 
                         password = password_match.group()
                         break
+
         parsed_data = [login, password]
         if login: self.output_file.write_output(parsed_data + [url])
 
     async def main(self):
         try:
+            print("Parsing has started...")
             async with aiohttp.ClientSession() as session:
                 processes = []  
                 for month in range(1, self.config.year_range+1):
@@ -134,8 +136,7 @@ def main():
         }
     )
     parser = LPParser(config, output_file)
-
-    print("Parsing...")
+    # Start the parsing process
     print(asyncio.run(parser.main()))
 
 
