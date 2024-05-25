@@ -92,7 +92,8 @@ class LPParser:
             if email_match and email_match.group() not in self.config.exceptions_list: 
                 login = email_match.group()
                 if ":" in login:
-                    login, password = login.split(":", 1)
+                    data = login.split(":")
+                    login, password = data[0], data[-1]
                     break
                 for k in range(1, min(4, len(website_text) - i)):
                     password_match = self.config.password_regex.search(website_text[i+k])
