@@ -72,7 +72,7 @@ class LPParser:
     async def _process_url(self, url, session):
         try:
             page = await session.get(url)
-        except aiohttp.client_exceptions.InvalidURL:
+        except Exception:
             raise ValueError("Invalid websites list in config file")
         if page.status != 200:
             return   
