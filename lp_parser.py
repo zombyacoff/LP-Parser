@@ -134,7 +134,7 @@ class LPParser:
                         return login, password
         return login, password
     
-    def _write_output(self, data: list[str]) -> None:
+    def _write_output(self, data: tuple) -> None:
         """ Writes output data """
         self.output_file.write_output(data)
 
@@ -145,8 +145,8 @@ class LPParser:
         async with aiohttp.ClientSession() as session:
             for month in range(1, self.config.year_range+1):
                 for day in range(1, monthrange(2020, month)[1]+1):
-                    for value in range(self.config.offset+1):
-                        url_list = [f"{url}-{month:02}-{day:02}-{value}" if value > 1 
+                    for value in range(self.config.offset):
+                        url_list = [f"{url}-{month:02}-{day:02}-{value+1}" if value > 0 
                                     else f"{url}-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
