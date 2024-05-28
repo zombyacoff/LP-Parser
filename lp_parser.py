@@ -150,12 +150,12 @@ class LPParser:
                                     else f"{url}-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
-                            try:
-                                process = asyncio.create_task(self._process_url(url, session))
-                            except ValueError as error:
-                                return f"ERROR: {error}"
-                            processes.append(process)                     
-            await asyncio.gather(*processes)
+                            process = asyncio.create_task(self._process_url(url, session))
+                            processes.append(process)
+            try:                  
+                await asyncio.gather(*processes)
+            except ValueError as error:
+                return f"ERROR: {error}"
         self.output_file.complete_output()
         elapsed_time = datetime.now() - LAUNCH_TIME
         return f"Successfully completed! (Time elapsed: {elapsed_time})\
