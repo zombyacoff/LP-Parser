@@ -96,7 +96,7 @@ class LPParser:
                 return
         self._parse(url, soup)
 
-    def _check_release_date(self, soup: BeautifulSoup) -> None:
+    def _check_release_date(self, soup: BeautifulSoup) -> bool:
         """ 
         Checks if the release date from 'time' 
         element is outside the specified config years
