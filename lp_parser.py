@@ -12,16 +12,19 @@ LAUNCH_TIME = datetime.now()
 
 
 class Config:
-    def __init__(self, config_path="config/settings.yml"):
-        self._load_settings(config_path)
+    def __init__(
+        self, config_path="config/settings.yml"
+) -> None:
+        self.config_path = config_path
+        self._load_settings()
         self._parse_settings()
         self.year_range = self._calculate_year_range()
 
-    def _load_settings(self, config_path):
-        with open(config_path) as file:
+    def _load_settings(self) -> None:
+        with open(self.config_path) as file:
             self.config = yaml.safe_load(file)
 
-    def _parse_settings(self):
+    def _parse_settings(self) -> None:
         self.offset_bool = self.config["offset"]["offset"]
         self.offset = self.config["offset"]["value"] if self.offset_bool else 1
         self.release_date_bool = self.config["release_date"]["release_date"]
@@ -31,7 +34,7 @@ class Config:
         self.login_regex = re.compile(rf"{self.config["for_advanced_users"]["login_regex"]}")
         self.password_regex = re.compile(rf"{self.config["for_advanced_users"]["password_regex"]}")
 
-    def _calculate_year_range(self):
+    def _calculate_year_range(self) -> int:
         if (self.release_date_bool
             and len(self.release_date) == 1
             and LAUNCH_TIME.year in self.release_date):
@@ -40,9 +43,9 @@ class Config:
     
 
 class OutputFile:
-    def __init__(self, 
-                 output_file_pattern, 
-                 folder_name="parser-output"):
+    def __init__(
+        self, output_file_pattern: dict, folder_name="parser-output"
+) -> None:
         self.folder_name = folder_name
         self.launch_time_format = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
         self.output_file_name = f"{self.launch_time_format}.yml"
@@ -51,25 +54,31 @@ class OutputFile:
         self.index = 1
         self._create_folder()
 
-    def _create_folder(self):
+    def _create_folder(self) -> None:
         os.makedirs(self.folder_name, exist_ok=True)
 
-    def write_output(self, data):
+    def write_output(
+        self, data: list[str]
+) -> None:
         for i, key in enumerate(self.output_data):   
             self.output_data[key][self.index] = data[i]
         self.index += 1
 
-    def complete_output(self):
+    def complete_output(self) -> None:
         with open(self.output_file_path, "w") as file:
             yaml.dump(self.output_data, file)
 
 
 class LPParser:
-    def __init__(self, config, output_file):
+    def __init__(
+        self, config: Config, output_file: OutputFile
+) -> None:
         self.config = config
         self.output_file = output_file
 
-    async def _process_url(self, url, session):
+    async def _process_url(
+        self, url: str, session: aiohttp.ClientSession
+) -> None:
         try:
             page = await session.get(url)
         except Exception:
@@ -84,7 +93,9 @@ class LPParser:
                 return   
         self._parse(url, soup)
 
-    def _parse(self, url, soup):
+    def _parse(
+        self, url: str, soup: BeautifulSoup
+) -> None:
         website_text = [sentence for sentence in soup.stripped_strings]
         login = password = ""       
         for i, current in enumerate(website_text):
@@ -101,10 +112,10 @@ class LPParser:
                         password = password_match.group()
                         break
 
-        parsed_data = [login, password]
-        if login: self.output_file.write_output(parsed_data + [url])
+        output_data = [login, password, url]
+        if login: self.output_file.write_output(output_data)
 
-    async def main(self):
+    async def main(self) -> str:
         try:
             print("Parsing has started...")
             async with aiohttp.ClientSession() as session:
@@ -123,7 +134,7 @@ class LPParser:
             elapsed_time = datetime.now() - LAUNCH_TIME
             return f"Successfully completed! (Time elapsed: {elapsed_time})\n>>> {self.output_file.output_file_path}"
         except ValueError as error:
-            return error
+            return f"ERROR: {error}"
 
 
 def main():
