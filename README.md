@@ -68,7 +68,7 @@ for_advanced_users:
 1. Lookup a `run_lp_parser.sh` file with the following content:
     ```bash
     #!/bin/bash
-    python3 lp_parser.py
+    python lp_parser.py
     ```
     
 2. Make the script executable:
