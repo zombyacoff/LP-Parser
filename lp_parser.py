@@ -31,8 +31,11 @@ class Config:
         self.release_date = self.config["release_date"]["years"]
         self.websites_list = self.config["websites_list"]
         self.exceptions_list = self.config["exceptions_list"]
-        self.login_regex = re.compile(rf"{self.config["for_advanced_users"]["login_regex"]}")
-        self.password_regex = re.compile(rf"{self.config["for_advanced_users"]["password_regex"]}")
+        self.login_regex = self._2regex(self.config["for_advanced_users"]["login_regex"])
+        self.password_regex = self._2regex(self.config["for_advanced_users"]["password_regex"])
+
+    def _2regex(self, regex_str) -> re.Pattern:
+        return re.compile(rf"{regex_str}")
 
     def _calculate_year_range(self) -> int:
         if (self.release_date_bool
@@ -81,17 +84,21 @@ class LPParser:
 ) -> None:
         try:
             page = await session.get(url)
-        except Exception:
+        except aiohttp.InvalidURL:
             raise ValueError("Invalid websites list in config file")
         if page.status != 200:
             return   
         soup = BeautifulSoup(await page.text(), "html.parser")
         if self.config.release_date_bool:
-            time_element = soup.select_one("time")
-            release_date = int(time_element.get_text("\n", strip=True)[-4:]) if time_element else 2024
-            if not release_date in self.config.release_date:  
-                return   
+            if self._check_release_date(soup):
+                return
         self._parse(url, soup)
+
+    def _check_release_date(self, soup: BeautifulSoup) -> None:
+        time_element = soup.select_one("time")
+        release_date = (int(time_element.get_text("\n", strip=True)[-4:]) if time_element
+                         else LAUNCH_TIME.year)
+        return not (release_date in self.config.release_date)
 
     def _parse(
         self, url: str, soup: BeautifulSoup
@@ -113,7 +120,8 @@ class LPParser:
                         break
 
         output_data = [login, password, url]
-        if login: self.output_file.write_output(output_data)
+        if login: 
+            self.output_file.write_output(output_data)
 
     async def main(self) -> str:
         try:
@@ -132,7 +140,8 @@ class LPParser:
                 await asyncio.gather(*processes)
             self.output_file.complete_output()
             elapsed_time = datetime.now() - LAUNCH_TIME
-            return f"Successfully completed! (Time elapsed: {elapsed_time})\n>>> {self.output_file.output_file_path}"
+            return f"Successfully completed! (Time elapsed: {elapsed_time})\
+                \n>>> {self.output_file.output_file_path}"
         except ValueError as error:
             return f"ERROR: {error}"
 
