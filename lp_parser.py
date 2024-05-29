@@ -113,10 +113,10 @@ class LPParser:
                 if page.status != 200:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
-                if (self.config.release_date_bool 
-                    and not self._check_release_date(soup)):
-                    return
-                self._parse(url, soup)
+            if (self.config.release_date_bool 
+                and not self._check_release_date(soup)):
+                return
+            self._parse(url, soup)
         except aiohttp.InvalidURL:
             raise ValueError("Invalid websites list in config file!")
 
@@ -140,7 +140,7 @@ class LPParser:
             self.output_file.write_output(credentials)
 
     def _extract_credentials(
-        self, website_text: list[str],
+        self, website_text: list[str]
 ) -> tuple[str, str]:
         """ Extracts credentials from website text """
         login = password = ""
