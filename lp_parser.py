@@ -1,7 +1,7 @@
 import asyncio
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from calendar import monthrange
 import aiohttp
 from bs4 import BeautifulSoup
