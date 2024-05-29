@@ -91,9 +91,9 @@ class LPParser:
         if page.status != 200:
             return   
         soup = BeautifulSoup(await page.text(), "html.parser")
-        if self.config.release_date_bool:
-            if self._check_release_date(soup):
-                return
+        if (self.config.release_date_bool 
+            and not self._check_release_date(soup)):
+            return
         self._parse(url, soup)
 
     def _check_release_date(self, soup: BeautifulSoup) -> bool:
@@ -104,7 +104,7 @@ class LPParser:
         time_element = soup.select_one("time")
         release_date = (int(time_element.get_text("\n", strip=True)[-4:]) if time_element
                          else LAUNCH_TIME.year)
-        return not (release_date in self.config.release_date)
+        return release_date in self.config.release_date
 
     def _parse(
         self, url: str, soup: BeautifulSoup
@@ -113,7 +113,7 @@ class LPParser:
         website_text = [sentence for sentence in soup.stripped_strings]
         login, password = self._extract_credentials(website_text)
         output_data = login, password, url
-        if login: self._write_output(output_data)
+        if login: self.output_file.write_output(output_data)
 
     def _extract_credentials(
         self, website_text: list[str], login="", password=""
@@ -133,10 +133,6 @@ class LPParser:
                         password = password_match.group()
                         return login, password
         return login, password
-    
-    def _write_output(self, data: tuple) -> None:
-        """ Writes output data """
-        self.output_file.write_output(data)
 
     async def main(self) -> str:
         """ Main processing function of the program """
