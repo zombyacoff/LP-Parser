@@ -221,11 +221,10 @@ Parsing has started...
             await asyncio.gather(*processes)
         self.output_file.complete_output()
         elapsed_time = datetime.now() - LAUNCH_TIME
-        print(f"""  
-       
-{paint_text("Successfully completed!", 36, True)} (Time elapsed: {elapsed_time})
->>> {paint_text(self.output_file.output_file_path, 33)}
-        """)
+        print(
+            f"\n\n{paint_text("Successfully completed!", 32, True)} (Time elapsed: {elapsed_time})"
+            f"\n>>> {paint_text(self.output_file.output_file_path, 33)}"
+        )
 
 
 def main():
