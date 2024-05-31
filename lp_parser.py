@@ -136,7 +136,7 @@ class LPParser:
         bar_length = round(percent) // 2
         bar = bar_length * "█" + (50-bar_length) * "▒"
         print(
-            f"{bar} [{percent:.2f}%]",
+            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)} [{self.bar_counter}/{self.config.total_url}]",
             end="\r"
         )
 
@@ -203,10 +203,6 @@ class LPParser:
         """ Main processing function of the program """
         processes = []
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
-        print(f"""
-Parsing has started...
-{paint_text("Do not turn off the program until the process is completed!", 31)}
-        """)
         async with aiohttp.ClientSession() as session: 
             for month in range(1, self.config.total_months+1):
                 for day in range(1, monthrange(2020, month)[1]+1):
@@ -217,13 +213,17 @@ Parsing has started...
                         for url in url_list:
                             async with semaphore:
                                 process = asyncio.create_task(self._process_url(url, session))
-                                processes.append(process)
+                                processes.append(process)         
+            print(f"""       
+Parsing has started...
+{paint_text("Do not turn off the program until the process is completed!", 31)}
+            """)
             await asyncio.gather(*processes)
         self.output_file.complete_output()
         elapsed_time = datetime.now() - LAUNCH_TIME
         print(
             f"\n\n{paint_text("Successfully completed!", 32, True)} (Time elapsed: {elapsed_time})"
-            f"\n>>> {paint_text(self.output_file.output_file_path, 33)}"
+            f"\n>>> {self.output_file.output_file_path}"
         )
 
 
