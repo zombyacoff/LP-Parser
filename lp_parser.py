@@ -144,7 +144,7 @@ class LPParser:
         self, url: str, session: aiohttp.ClientSession
 ) -> None:
         """
-        Parses a URL; 
+        Processes a URL; 
         skips processing if status isn't 200 or release date is irrelevant
         """
         try:
