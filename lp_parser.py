@@ -9,6 +9,14 @@ import yaml
 
 
 LAUNCH_TIME = datetime.now()
+SEMAPHORE_MAX_LIMIT = 100
+LEAP_YEAR = 2020
+
+
+def paint_text(text: str, color_code: int, bold=False) -> str:
+    if bold:
+        return f"\033[1;{color_code}m{text}\033[0m"
+    return f"\033[{color_code}m{text}\033[0m"
 
 
 class Config:
@@ -18,7 +26,9 @@ class Config:
         self.config_path = config_path
         self._load_settings()
         self._parse_settings()
-        self.year_range = self._calculate_year_range()
+        self.total_months = self._calculate_total_months()
+        self.total_days = self._calculate_total_days()
+        self.total_url = self._calculate_total_url()
 
     def _load_settings(self) -> None:
         """
@@ -38,7 +48,7 @@ class Config:
         """
         try:
             self.offset_bool = self.config["offset"]["offset"]
-            self.offset = self.config["offset"]["value"] if self.offset_bool else 1
+            self.offset_value = self.config["offset"]["value"] if self.offset_bool else 1
             self.release_date_bool = self.config["release_date"]["release_date"]
             self.release_date = self.config["release_date"]["years"]
             self.websites_list = self.config["websites_list"]
@@ -52,9 +62,9 @@ class Config:
         """ Converts a string to a compiled regular expression pattern """
         return re.compile(rf"{regex_str}")
 
-    def _calculate_year_range(self) -> int:
+    def _calculate_total_months(self) -> int:
         """
-        Calculates the year range based on the release date settings;
+        Calculates the number of months to consider based on the release date settings;
         returns the current month if the release date is relevant, otherwise returns 12
         """
         if (self.release_date_bool
@@ -63,6 +73,23 @@ class Config:
             return LAUNCH_TIME.month
         return 12
     
+    def _calculate_total_days(self) -> int:
+        """
+        Calculates the total number of days based on the total months;
+        returns 366 for leap years if total_months is 12, 
+        otherwise calculates the days for the given months
+        """
+        if self.total_months == 12:
+            return 366 # Number of days in a leap year
+        return sum(monthrange(LEAP_YEAR, month)[1] 
+                   for month in range(1, self.config.year_range+1))
+    
+    def _calculate_total_url(self) -> int:
+        """ Calculates the total number of URLs to be processed """
+        return (len(self.websites_list) *
+                self.offset_value *
+                self.total_days)
+
 
 class OutputFile:
     def __init__(
@@ -88,7 +115,8 @@ class OutputFile:
 
     def complete_output(self) -> None:
         """
-        Completes the output process by writing the collected data to the output file
+        Completes the output process by writing 
+        the collected data to the output file
         """
         with open(self.output_file_path, "w") as file:
             yaml.dump(self.output_data, file)
@@ -100,6 +128,17 @@ class LPParser:
 ) -> None:
         self.config = config
         self.output_file = output_file
+        self.bar_counter = 1
+
+    def _get_progress_bar(self):
+        percent = 100 * self.bar_counter / self.config.total_url
+        self.bar_counter += 1 
+        bar_length = round(percent) // 2
+        bar = bar_length * "█" + (50-bar_length) * "▒"
+        print(
+            f"{bar} [{percent:.2f}%]",
+            end="\r"
+        )
 
     async def _process_url(
         self, url: str, session: aiohttp.ClientSession
@@ -110,6 +149,7 @@ class LPParser:
         """
         try:
             async with session.get(url) as page:
+                self._get_progress_bar()
                 if page.status != 200:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
@@ -161,28 +201,40 @@ class LPParser:
 
     async def main(self) -> None:
         """ Main processing function of the program """
-        print("Parsing has started...")
         processes = []
-        semaphore = asyncio.Semaphore(100) # Limiter
+        semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
+        print(f"""
+Parsing has started...
+{paint_text("Do not turn off the program until the process is completed!", 31)}
+        """)
         async with aiohttp.ClientSession() as session: 
-            for month in range(1, self.config.year_range+1):
-                for day in range(1, monthrange(2020, month)[1]+1):
-                    for value in range(self.config.offset):
-                        url_list = [f"{url}-{month:02}-{day:02}-{value+1}" if value > 0 
+            for month in range(1, self.config.total_months+1):
+                for day in range(1, monthrange(LEAP_YEAR, month)[1]+1):
+                    for offset in range(self.config.offset_value):
+                        url_list = [f"{url}-{month:02}-{day:02}-{offset+1}" if offset > 0 
                                     else f"{url}-{month:02}-{day:02}" 
                                     for url in self.config.websites_list]
                         for url in url_list:
                             async with semaphore:
                                 process = asyncio.create_task(self._process_url(url, session))
-                                processes.append(process)               
+                                processes.append(process)
             await asyncio.gather(*processes)
         self.output_file.complete_output()
         elapsed_time = datetime.now() - LAUNCH_TIME
-        print(f"Successfully completed! (Time elapsed: {elapsed_time})\
-            \n>>> {self.output_file.output_file_path}")
+        print(f"""
+                   
+{paint_text("Successfully completed!", 32)} (Time elapsed: {elapsed_time})
+>>> {self.output_file.output_file_path}
+        """)
 
 
 def main():
+    print(r"""
+_      ___         ___                               
+| |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
+| |__  |  _/ |___| |  _/ / _` | | '_| (_-< / -_) | '_|
+|____| |_|         |_|   \__,_| |_|   /__/ \___| |_|                                                                   
+    """)
     try:
         config = Config()
         output_file = OutputFile(
@@ -196,9 +248,9 @@ def main():
         # Start the parsing process
         asyncio.run(parser.main())
     except ValueError as error:
-        print(f"ERROR: {error}")
+        print(paint_text("ERROR", 31, True), error)
     except Exception as error:
-        print(f"Unexpected ERROR: {error}")
+        print(paint_text("ERROR", 31, True), error)
 
 
 if __name__ == "__main__":
