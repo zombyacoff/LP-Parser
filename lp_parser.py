@@ -135,7 +135,7 @@ class LPParser:
         bar_length = round(percent) // 2
         bar = bar_length * "█" + (50-bar_length) * "▒"
         print(
-            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)} "
+            bar, paint_text(f"[{percent:.2f}%]", 1),
             f"[{self.bar_counter}/{self.config.total_url}]",
             end="\r"
         )
