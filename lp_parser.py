@@ -10,7 +10,6 @@ import yaml
 
 LAUNCH_TIME = datetime.now()
 SEMAPHORE_MAX_LIMIT = 100
-LEAP_YEAR = 2020
 
 
 def paint_text(text: str, color_code: int, bold=False) -> str:
@@ -81,7 +80,7 @@ class Config:
         """
         if self.total_months == 12:
             return 366 # Number of days in a leap year
-        return sum(monthrange(LEAP_YEAR, month)[1] 
+        return sum(monthrange(2020, month)[1] 
                    for month in range(1, self.config.year_range+1))
     
     def _calculate_total_url(self) -> int:
@@ -209,7 +208,7 @@ Parsing has started...
         """)
         async with aiohttp.ClientSession() as session: 
             for month in range(1, self.config.total_months+1):
-                for day in range(1, monthrange(LEAP_YEAR, month)[1]+1):
+                for day in range(1, monthrange(2020, month)[1]+1):
                     for offset in range(self.config.offset_value):
                         url_list = [f"{url}-{month:02}-{day:02}-{offset+1}" if offset > 0 
                                     else f"{url}-{month:02}-{day:02}" 
