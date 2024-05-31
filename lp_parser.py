@@ -81,7 +81,7 @@ class Config:
         if self.total_months == 12:
             return 366 # Number of days in a leap year
         return sum(monthrange(2020, month)[1] 
-                   for month in range(1, self.config.year_range+1))
+                   for month in range(1, self.total_months+1))
     
     def _calculate_total_url(self) -> int:
         """ Calculates the total number of URLs to be processed """
