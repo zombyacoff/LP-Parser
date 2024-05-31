@@ -136,7 +136,8 @@ class LPParser:
         bar_length = round(percent) // 2
         bar = bar_length * "█" + (50-bar_length) * "▒"
         print(
-            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)} [{self.bar_counter}/{self.config.total_url}]",
+            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)}\
+                [{self.bar_counter}/{self.config.total_url}]",
             end="\r"
         )
 
@@ -248,7 +249,7 @@ _      ___         ___
     except ValueError as error:
         print(paint_text("ERROR", 31, True), error)
     except Exception as error:
-        print(paint_text("ERROR", 31, True), error)
+        print(paint_text("UNEXPECTED ERROR", 31, True), error)
 
 
 if __name__ == "__main__":
