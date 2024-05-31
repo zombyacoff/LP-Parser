@@ -132,14 +132,14 @@ class LPParser:
     def _get_progress_bar(self):
         """ Updates and prints the progress bar to the console """
         percent = 100 * self.bar_counter / self.config.total_url
-        self.bar_counter += 1 
         bar_length = round(percent) // 2
         bar = bar_length * "█" + (50-bar_length) * "▒"
         print(
-            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)}\
-                [{self.bar_counter}/{self.config.total_url}]",
+            f"{bar} {paint_text(f"[{percent:.2f}%]", 1)} "
+            f"[{self.bar_counter}/{self.config.total_url}]",
             end="\r"
         )
+        self.bar_counter += 1 
 
     async def _process_url(
         self, url: str, session: aiohttp.ClientSession
