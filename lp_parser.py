@@ -130,6 +130,7 @@ class LPParser:
         self.bar_counter = 1
 
     def _get_progress_bar(self):
+        """ Updates and prints the progress bar to the console """
         percent = 100 * self.bar_counter / self.config.total_url
         self.bar_counter += 1 
         bar_length = round(percent) // 2
@@ -143,7 +144,7 @@ class LPParser:
         self, url: str, session: aiohttp.ClientSession
 ) -> None:
         """
-        Fetches and parses a URL; 
+        Parses a URL; 
         skips processing if status isn't 200 or release date is irrelevant
         """
         try:
@@ -220,20 +221,19 @@ Parsing has started...
             await asyncio.gather(*processes)
         self.output_file.complete_output()
         elapsed_time = datetime.now() - LAUNCH_TIME
-        print(f"""
-                   
-{paint_text("Successfully completed!", 32)} (Time elapsed: {elapsed_time})
->>> {self.output_file.output_file_path}
+        print(f"""  
+       
+{paint_text("Successfully completed!", 36, True)} (Time elapsed: {elapsed_time})
+>>> {paint_text(self.output_file.output_file_path, 33)}
         """)
 
 
 def main():
-    print(r"""
+    print(paint_text(r"""
 _      ___         ___                               
 | |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
 | |__  |  _/ |___| |  _/ / _` | | '_| (_-< / -_) | '_|
-|____| |_|         |_|   \__,_| |_|   /__/ \___| |_|                                                                   
-    """)
+|____| |_|         |_|   \__,_| |_|   /__/ \___| |_|  """, 1))
     try:
         config = Config()
         output_file = OutputFile(
@@ -244,7 +244,6 @@ _      ___         ___
             }
         )
         parser = LPParser(config, output_file)
-        # Start the parsing process
         asyncio.run(parser.main())
     except ValueError as error:
         print(paint_text("ERROR", 31, True), error)
