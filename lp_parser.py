@@ -30,10 +30,6 @@ class Config:
         self.total_url = self._calculate_total_url()
 
     def _load_settings(self) -> None:
-        """
-        Loads settings from the YAML file specified by 'config_path';
-        raises a ValueError if the file is not found
-        """
         try:
             with open(self.config_path) as file:
                 self.config = yaml.safe_load(file)
@@ -41,10 +37,6 @@ class Config:
             raise ValueError("The settings.yml file is missing!")
 
     def _parse_settings(self) -> None:
-        """
-        Parses the loaded settings and initializes configuration attributes;
-        raises a ValueError if the settings file is incorrect
-        """
         try:
             self.offset_bool = self.config["offset"]["offset"]
             self.offset_value = self.config["offset"]["value"] if self.offset_bool else 1
@@ -57,15 +49,10 @@ class Config:
         except Exception as error:
             raise ValueError(f"The settings.yml file is incorrect: {error}")
 
-    def _2regex(self, regex_str) -> re.Pattern:
-        """ Converts a string to a compiled regular expression pattern """
+    def _2regex(self, regex_str: str) -> re.Pattern:
         return re.compile(rf"{regex_str}")
 
     def _calculate_total_months(self) -> int:
-        """
-        Calculates the number of months to consider based on the release date settings;
-        returns the current month if the release date is relevant, otherwise returns 12
-        """
         if (self.release_date_bool
             and len(self.release_date) == 1
             and LAUNCH_TIME.year in self.release_date):
@@ -73,18 +60,12 @@ class Config:
         return 12
     
     def _calculate_total_days(self) -> int:
-        """
-        Calculates the total number of days based on the total months;
-        returns 366 for leap years if total_months is 12, 
-        otherwise calculates the days for the given months
-        """
         if self.total_months == 12:
             return 366 # Number of days in a leap year
         return sum(monthrange(2020, month)[1] 
                    for month in range(1, self.total_months+1))
     
     def _calculate_total_url(self) -> int:
-        """ Calculates the total number of URLs to be processed """
         return (len(self.websites_list) *
                 self.offset_value *
                 self.total_days)
@@ -103,20 +84,14 @@ class OutputFile:
         self._create_folder()
 
     def _create_folder(self) -> None:
-        """ Creates the output folder if it doesn't already exist """
         os.makedirs(self.folder_name, exist_ok=True)
 
     def write_output(self, data: list[str]) -> None:
-        """ Writes the provided data to the dictionary """
         for i, key in enumerate(self.output_data):   
             self.output_data[key][self.index] = data[i]
         self.index += 1
 
     def complete_output(self) -> None:
-        """
-        Completes the output process by writing 
-        the collected data to the output file
-        """
         with open(self.output_file_path, "w") as file:
             yaml.dump(self.output_data, file)
 
@@ -130,12 +105,11 @@ class LPParser:
         self.bar_counter = 1
 
     def _get_progress_bar(self):
-        """ Updates and prints the progress bar to the console """
         percent = 100 * self.bar_counter / self.config.total_url
         bar_length = round(percent) // 2
         bar = bar_length * "█" + (50-bar_length) * "▒"
         print(
-            bar, paint_text(f"[{percent:.2f}%]", 1),
+            bar, paint_text(f"[{percent:.2f}%]", 1), 
             f"[{self.bar_counter}/{self.config.total_url}]",
             end="\r"
         )
@@ -144,10 +118,6 @@ class LPParser:
     async def _process_url(
         self, url: str, session: aiohttp.ClientSession
 ) -> None:
-        """
-        Processes a URL; 
-        skips processing if status isn't 200 or release date is irrelevant
-        """
         try:
             async with session.get(url) as page:
                 self._get_progress_bar()
@@ -162,10 +132,6 @@ class LPParser:
             raise ValueError("Invalid websites list in config file!")
 
     def _check_release_date(self, soup: BeautifulSoup) -> bool:
-        """ 
-        Checks if the release date from 'time' 
-        element is outside the specified config years
-        """
         time_element = soup.select_one("time")
         release_date = (int(time_element.get_text("\n", strip=True)[-4:]) if time_element
                          else LAUNCH_TIME.year)
@@ -174,7 +140,6 @@ class LPParser:
     def _parse(
         self, url: str, soup: BeautifulSoup
 ) -> None:
-        """ Parse soup to extract and write credentials if found """
         website_text = [sentence for sentence in soup.stripped_strings]
         credentials = self._extract_credentials(website_text) + (url,)
         if credentials[0] != "": 
@@ -183,7 +148,6 @@ class LPParser:
     def _extract_credentials(
         self, website_text: list[str]
 ) -> tuple[str, str]:
-        """ Extracts credentials from website text """
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
@@ -201,7 +165,6 @@ class LPParser:
         return login, password
 
     async def main(self) -> None:
-        """ Main processing function of the program """
         processes = []
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         async with aiohttp.ClientSession() as session: 
