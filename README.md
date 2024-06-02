@@ -19,7 +19,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 ## Installation
 1. Download the release and extract the zip.
    
-3. Go to the directory and install dependencies:
+2. Go to the directory and install dependencies:
    
     ```bash
     cd LP-Parser
@@ -56,17 +56,17 @@ for_advanced_users:
 
 ## Usage
 ### Windows 
-- Double-click the `run_lp_parser.bat` file to run the program.
+- Double-click the `start.bat` file to run the program.
    
 ### Unix-based Systems (Linux, macOS)
 1. Make the script executable:
    ```bash
-   chmod +x run_lp_parser.sh
+   chmod +x start.sh
    ```
    
 2. Run the script:
    ```bash
-   ./run_lp_parser.sh
+   ./start.sh
    ```
    
 ## Output
