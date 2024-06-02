@@ -59,12 +59,12 @@ for_advanced_users:
 - Double-click the `run_lp_parser.bat` file to run the program.
    
 ### Unix-based Systems (Linux, macOS)
-**1.** Make the script executable:
+1. Make the script executable:
    ```bash
    chmod +x run_lp_parser.sh
    ```
    
-**2.** Run the script:
+2. Run the script:
    ```bash
    ./run_lp_parser.sh
    ```
