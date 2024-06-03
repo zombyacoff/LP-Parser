@@ -20,7 +20,6 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 1. Download the release and extract the zip.
    
 2. Go to the directory and install dependencies:
-   
     ```bash
     cd LP-Parser
     pip install -r requirements.txt
