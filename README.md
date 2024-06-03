@@ -38,16 +38,20 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 ```yaml
 offset:
   offset: true
-  value: 3
+  value: 2
+
 release_date:
   release_date: true
   years:
-    - 2022
-    - 2023
+  - 2024
+  - 2023
+
 websites_list:
-  - "https://example.com/login"
-exceptions_list:
-  - "admin@example.com"
+- "https://telegra.ph/steam"
+
+exceptions_list: 
+- "dmca@telegram.org"
+
 for_advanced_users:
   login_regex: \S+@\S+\.\S+
   password_regex: \S*\d\S*
@@ -79,7 +83,7 @@ password:
   1. greatestpassword3
   2. somepassword7
 url:
-  1. https://example.com/login-01-03
-  2. https://example.com/login-01-07
+  1. https://telegra.ph/steam-01-03
+  2. https://telegra.ph/steam-01-03-2
 ```
 
