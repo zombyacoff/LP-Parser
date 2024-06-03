@@ -47,10 +47,10 @@ release_date:
   - 2023
 
 websites_list:
-- "https://telegra.ph/steam"
+- https://telegra.ph/steam
 
 exceptions_list: 
-- "dmca@telegram.org"
+- dmca@telegram.org
 
 for_advanced_users:
   login_regex: \S+@\S+\.\S+
