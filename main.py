@@ -10,15 +10,17 @@ import yaml
 
 LAUNCH_TIME = datetime.now()
 SEMAPHORE_MAX_LIMIT = 100
-# progress bar chars
+# Progress bar chars
 FULL_CHAR = "█"
 HALF_CHAR = "▒"
 
 
 def paint_text(text: str, color_code: int, bold=False) -> str:
-    if bold:
-        return f"\033[1;{color_code}m{text}\033[0m"
-    return f"\033[{color_code}m{text}\033[0m"
+    return (
+        f"\033[1;{color_code}m{text}\033[0m"
+        if bold
+        else f"\033[{color_code}m{text}\033[0m"
+    )
 
 
 class Config:
@@ -40,9 +42,7 @@ class Config:
     def _parse_settings(self) -> None:
         try:
             self.offset_bool = self.config["offset"]["offset"]
-            self.offset_value = (
-                self.config["offset"]["value"] if self.offset_bool else 1
-            )
+            self.offset_value = self._validate_offset(self.config["offset"]["value"])
             self.release_date_bool = self.config["release_date"]["release_date"]
             self.release_date = self.config["release_date"]["years"]
             self.websites_list = self.config["websites_list"]
@@ -55,6 +55,13 @@ class Config:
             )
         except Exception as error:
             raise ValueError(f"The settings.yml file is incorrect: {error}")
+
+    def _validate_offset(self, value: int) -> int:
+        if not self.offset_bool:
+            return 1
+        if type(value) is not int and value < 2:
+            raise ValueError(f"Offset value is incorrect")
+        return value
 
     def _compile_regex(self, regex_str: str) -> re.Pattern:
         return re.compile(rf"{regex_str}")
@@ -104,7 +111,7 @@ class LPParser:
         self.output_file = output_file
         self.bar_counter = 1
 
-    def _get_progress_bar(self):
+    def _get_progress_bar(self) -> None:
         percent = 100 * self.bar_counter / self.config.total_url
         bar_length = round(percent) // 2
         bar = bar_length * FULL_CHAR + (50 - bar_length) * HALF_CHAR
@@ -196,7 +203,7 @@ class LPParser:
         )
 
 
-def main():
+def main() -> None:
     # fmt: off
     print(paint_text(r"""
 _      ___         ___                               
