@@ -89,18 +89,18 @@ class OutputFile:
         self.output_file_name = f"{self.launch_time_format}.yml"
         self.output_file_path = os.path.join(self.folder_name, self.output_file_name)
         self.output_data = output_file_pattern
-        self.index = 1
-        self._create_folder()
+        self.output_file_index = 1
 
     def _create_folder(self) -> None:
         os.makedirs(self.folder_name, exist_ok=True)
 
-    def write_output(self, data: list[str]) -> None:
+    def write_output(self, data: tuple[str, str, str]) -> None:
         for i, key in enumerate(self.output_data):
-            self.output_data[key][self.index] = data[i]
-        self.index += 1
+            self.output_data[key][self.output_file_index] = data[i]
+        self.output_file_index += 1
 
     def complete_output(self) -> None:
+        self._create_folder()
         with open(self.output_file_path, "w") as file:
             yaml.dump(self.output_data, file)
 
@@ -144,27 +144,30 @@ class LPParser:
 
     def _parse(self, url: str, soup: BeautifulSoup) -> None:
         website_text = [sentence for sentence in soup.stripped_strings]
-        credentials = self._extract_credentials(website_text) + (url,)
-        if credentials[0] != "":
-            self.output_file.write_output(credentials)
+        output_data = self._extract_credentials(website_text) + (url,)
+        if output_data[0] != "":
+            self.output_file.write_output(output_data)
 
     def _extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
-            if email_match and email_match.group() not in self.config.exceptions_list:
-                login = email_match.group()
-                if ":" in login:
-                    data = login.split(":")
-                    login, password = data[0], data[-1]
-                    return login, password
-                for k in range(1, min(4, len(website_text) - i)):
-                    password_match = self.config.password_regex.search(
-                        website_text[i + k]
-                    )
-                    if password_match:
-                        password = password_match.group()
-                        return login, password
+            if (
+                email_match is None
+                or email_match.group() in self.config.exceptions_list
+            ):
+                continue
+            login = email_match.group()
+            if ":" in login:
+                data = login.split(":")
+                login, password = data[0], data[-1]
+                return login, password
+            for k in range(1, min(4, len(website_text) - i)):
+                password_match = self.config.password_regex.search(website_text[i + k])
+                if password_match is None:
+                    continue
+                password = password_match.group()
+                return login, password
         return login, password
 
     async def main(self) -> None:
