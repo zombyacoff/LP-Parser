@@ -176,11 +176,11 @@ class LPParser:
         async with aiohttp.ClientSession() as session:
             for month in range(1, self.config.total_months + 1):
                 for day in range(1, monthrange(2020, month)[1] + 1):
-                    for offset in range(self.config.offset_value):
+                    for offset in range(1, self.config.offset_value + 1):
                         url_list = [
                             (
-                                f"{url}-{month:02}-{day:02}-{offset+1}"
-                                if offset > 0
+                                f"{url}-{month:02}-{day:02}-{offset}"
+                                if offset > 1
                                 else f"{url}-{month:02}-{day:02}"
                             )
                             for url in self.config.websites_list
