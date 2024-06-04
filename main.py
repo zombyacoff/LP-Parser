@@ -44,29 +44,38 @@ class Config:
             self.offset_bool = self.config["offset"]["offset"]
             self.offset_value = self._validate_offset(self.config["offset"]["value"])
             self.release_date_bool = self.config["release_date"]["release_date"]
-            self.release_date = self.config["release_date"]["years"]
+            self.release_date = self._validate_release_date(
+                self.config["release_date"]["years"]
+            )
             self.websites_list = self.config["websites_list"]
             self.exceptions_list = self.config["exceptions_list"]
-            self.login_regex = self._compile_regex(
+            self.login_regex = re.compile(
                 self.config["for_advanced_users"]["login_regex"]
             )
-            self.password_regex = self._compile_regex(
+            self.password_regex = re.compile(
                 self.config["for_advanced_users"]["password_regex"]
             )
-        except Exception as error:
+        except (KeyError, ValueError, TypeError) as error:
             raise ValueError(f"The settings.yml file is incorrect: {error}")
 
-    def _validate_offset(self, value: int) -> int:
+    def _validate_offset(self, value) -> int:
         if not self.offset_bool:
             return 1
-        if type(value) is not int or value < 2:
+        if not isinstance(value, int) or value < 2:
             raise ValueError(
-                f"Offset value is incorrect (value must be an integer and greater than 2)"
+                "Offset value is incorrect (value must be an integer and greater than 2)"
             )
         return value
 
-    def _compile_regex(self, regex_str: str) -> re.Pattern:
-        return re.compile(rf"{regex_str}")
+    def _validate_release_date(self, values: list) -> list[int] | None:
+        if not self.release_date_bool:
+            return None
+        if any(
+            not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year
+            for value in values
+        ):
+            raise ValueError("Release date list is incorrect")
+        return values
 
     def _calculate_total_months(self) -> int:
         if self.release_date_bool and [LAUNCH_TIME.year] == self.release_date:
@@ -77,7 +86,8 @@ class Config:
         if self.total_months == 12:
             return 366  # Number of days in a leap year
         return sum(
-            monthrange(2020, month)[1] for month in range(1, self.total_months + 1)
+            monthrange(LAUNCH_TIME.year, month)[1]
+            for month in range(1, self.total_months + 1)
         )
 
     def _calculate_total_url(self) -> int:
@@ -172,7 +182,7 @@ class LPParser:
                 if password_match is None:
                     continue
                 password = password_match.group()
-                return login, password
+                break
         return login, password
 
     async def main(self) -> None:

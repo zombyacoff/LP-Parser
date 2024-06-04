@@ -1,3 +1,6 @@
 /parser-output
 .vscode
 lp_parser_*.py
+
+__pycache__
+.pytest_cache
