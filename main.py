@@ -59,8 +59,10 @@ class Config:
     def _validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
-        if type(value) is not int and value < 2:
-            raise ValueError(f"Offset value is incorrect")
+        if type(value) is not int or value < 2:
+            raise ValueError(
+                f"Offset value is incorrect (value must be an integer and greater than 2)"
+            )
         return value
 
     def _compile_regex(self, regex_str: str) -> re.Pattern:
@@ -94,7 +96,7 @@ class OutputFile:
     def _create_folder(self) -> None:
         os.makedirs(self.folder_name, exist_ok=True)
 
-    def write_output(self, data: tuple[str, str, str]) -> None:
+    def write_output(self, data: tuple) -> None:
         for i, key in enumerate(self.output_data):
             self.output_data[key][self.output_file_index] = data[i]
         self.output_file_index += 1
@@ -127,13 +129,16 @@ class LPParser:
                 if page.status != 200:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
-            if self.config.release_date_bool and not self._check_release_date(soup):
+            if not self._check_release_date(soup):
                 return
             self._parse(url, soup)
         except aiohttp.InvalidURL:
             raise ValueError("Invalid websites list in config file!")
 
     def _check_release_date(self, soup: BeautifulSoup) -> bool:
+        if not self.config.release_date_bool:
+            return True
+        # The algorithm was originally written for telegra.ph
         time_element = soup.select_one("time")
         release_date = (
             int(time_element.get_text("\n", strip=True)[-4:])
