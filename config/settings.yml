@@ -7,10 +7,10 @@ release_date:
   years:
   - 2024
 
-websites_list: # example: https://telegra.ph/steam
+websites: # example: https://telegra.ph/steam
 -
 
-exceptions_list: # telegra.ph: dmca@telegram.org
+exceptions: # telegra.ph: dmca@telegram.org
 -
 
 # DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING

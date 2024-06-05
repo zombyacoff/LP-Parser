@@ -1,3 +1,7 @@
+#
+# The script was originally written for telegra.ph
+#
+
 import asyncio
 import os
 import re
@@ -47,8 +51,8 @@ class Config:
             self.release_date = self._validate_release_date(
                 self.config["release_date"]["years"]
             )
-            self.websites_list = self.config["websites_list"]
-            self.exceptions_list = self.config["exceptions_list"]
+            self.websites = self.config["websites"]
+            self.exceptions = self.config["exceptions"]
             self.login_regex = re.compile(
                 self.config["for_advanced_users"]["login_regex"]
             )
@@ -91,7 +95,7 @@ class Config:
         )
 
     def _calculate_total_url(self) -> int:
-        return len(self.websites_list) * self.offset_value * self.total_days
+        return len(self.websites) * self.offset_value * self.total_days
 
 
 class OutputFile:
@@ -148,7 +152,6 @@ class LPParser:
     def _check_release_date(self, soup: BeautifulSoup) -> bool:
         if not self.config.release_date_bool:
             return True
-        # The algorithm was originally written for telegra.ph
         time_element = soup.select_one("time")
         release_date = (
             int(time_element.get_text("\n", strip=True)[-4:])
@@ -169,7 +172,7 @@ class LPParser:
             email_match = self.config.login_regex.search(current)
             if (
                 email_match is None
-                or email_match.group() in self.config.exceptions_list
+                or email_match.group() in self.config.exceptions
             ):
                 continue
             login = email_match.group()
@@ -198,7 +201,7 @@ class LPParser:
                                 if offset > 1
                                 else f"{url}-{month:02}-{day:02}"
                             )
-                            for url in self.config.websites_list
+                            for url in self.config.websites
                         ]
                         for url in url_list:
                             async with semaphore:
