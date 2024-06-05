@@ -46,10 +46,10 @@ release_date:
   - 2024
   - 2023
 
-websites_list:
+websites:
 - https://telegra.ph/steam
 
-exceptions_list: 
+exceptions: 
 - dmca@telegram.org
 
 for_advanced_users:
