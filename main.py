@@ -82,9 +82,11 @@ class Config:
         return values
 
     def _calculate_total_months(self) -> int:
-        if self.release_date_bool and [LAUNCH_TIME.year] == self.release_date:
-            return LAUNCH_TIME.month
-        return 12
+        return (
+            LAUNCH_TIME.month
+            if self.release_date_bool and [LAUNCH_TIME.year] == self.release_date
+            else 12
+        )
 
     def _calculate_total_days(self) -> int:
         if self.total_months == 12:
@@ -170,10 +172,7 @@ class LPParser:
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
-            if (
-                email_match is None
-                or email_match.group() in self.config.exceptions
-            ):
+            if email_match is None or email_match.group() in self.config.exceptions:
                 continue
             login = email_match.group()
             if ":" in login:
