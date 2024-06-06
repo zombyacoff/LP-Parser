@@ -4,7 +4,8 @@ from .constants import (
     INCORRECT_RELEASE_DATE_TEXT,
     LAUNCH_TIME,
 )
-from .utils import ConfigException, FileManager, compile_regex, get_monthrange
+from .utils import ConfigException, compile_regex, get_monthrange
+from .file_manager import FileManager
 
 
 class Config:

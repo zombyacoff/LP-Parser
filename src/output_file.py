@@ -1,7 +1,7 @@
 import os
 
 from .constants import LAUNCH_TIME, OUTPUT_FILE_PATTERN, OUTPUT_FOLDER_NAME
-from .utils import FileManager
+from .file_manager import FileManager
 
 
 class OutputFile:
