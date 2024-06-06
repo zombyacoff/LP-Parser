@@ -1,12 +1,8 @@
 from .constants import FULL_CHAR, HALF_CHAR, PERCENT_PROGRESS, TOTAL_PROGRESS
+from .utils import paint_text
 
 
 class ProgressBar:
-    """
-    Progress bar example:
-    █████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ [27/100] [27.00%]
-    """
-
     @staticmethod
     def show(current: int, total: int) -> None:
         percent = 100 * current / total
@@ -15,7 +11,7 @@ class ProgressBar:
         print(
             bar,
             TOTAL_PROGRESS.format(current=current, total=total),
-            PERCENT_PROGRESS.format(percent=percent),
+            paint_text(PERCENT_PROGRESS.format(percent=percent), 1),
             end="\r",
         )
 

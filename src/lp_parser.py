@@ -73,28 +73,26 @@ class LPParser:
                 break
         return login, password
 
-    async def main(self) -> None:
-        processes = []
-        semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
-        async with aiohttp.ClientSession() as session:
-            url_list = [
-                (
-                    f"{url}-{month:02}-{day:02}-{offset}"
-                    if offset > 1
-                    else f"{url}-{month:02}-{day:02}"
-                )
-                for month in range(1, self.config.total_months + 1)
-                for day in range(1, get_monthrange(month) + 1)
-                for offset in range(1, self.config.offset_value + 1)
-                for url in self.config.websites
-            ]
-            for url in url_list:
-                async with semaphore:
-                    process = asyncio.create_task(self.__process_url(url, session))
-                    processes.append(process)
-            print(paint_text(PARSING_START_MESSAGE, 33))
-            await asyncio.gather(*processes)
-        self.output_file.complete_output()
+    def __generate_urls(self) -> list[str]:
+        return [
+            (
+                f"{url}-{month:02}-{day:02}-{offset}"
+                if offset > 1
+                else f"{url}-{month:02}-{day:02}"
+            )
+            for month in range(1, self.config.total_months + 1)
+            for day in range(1, get_monthrange(month) + 1)
+            for offset in range(1, self.config.offset_value + 1)
+            for url in self.config.websites
+        ]
+
+    async def __semaphore_process(
+        self, url: str, semaphore: asyncio.Semaphore, session: aiohttp.ClientSession
+    ) -> None:
+        async with semaphore:
+            await self.__process_url(url, session)
+
+    def __complete_print(self) -> None:
         elapsed_time = get_launch_time() - LAUNCH_TIME
         print(
             paint_text(SUCCESS_COMPLETE_TITLE, 32, True)
@@ -107,3 +105,15 @@ class LPParser:
             f"--> {self.output_file.output_file_path}",
             sep="\n",
         )
+
+    async def main(self) -> None:
+        semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
+        async with aiohttp.ClientSession() as session:
+            urls = self.__generate_urls()
+            processes = [
+                self.__semaphore_process(url, semaphore, session) for url in urls
+            ]
+            print(paint_text(PARSING_START_MESSAGE, 33))
+            await asyncio.gather(*processes)
+        self.output_file.complete_output()
+        self.__complete_print()
