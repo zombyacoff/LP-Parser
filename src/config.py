@@ -42,14 +42,14 @@ class Config:
             self.password_regex = re.compile(
                 self.config["for_advanced_users"]["password_regex"]
             )
-        except (KeyError, ValueError, TypeError) as error:
+        except (KeyError, TypeError, ConfigException) as error:
             raise ConfigException(error) from error
 
     def __validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
         if not isinstance(value, int) or value < 2:
-            raise ValueError(INCORRECT_OFFSET_MESSAGE)
+            raise ConfigException(INCORRECT_OFFSET_MESSAGE)
         return value
 
     def __validate_release_date(self, values: list[int]) -> list[int] | None:
@@ -59,7 +59,7 @@ class Config:
             not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year
             for value in values
         ):
-            raise ValueError(INCORRECT_RELEASE_DATE_MESSAGE)
+            raise ConfigException(INCORRECT_RELEASE_DATE_MESSAGE)
         return values
 
     def __calculate_totals(self) -> int:
