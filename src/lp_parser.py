@@ -6,11 +6,12 @@ from bs4 import BeautifulSoup
 
 from .config import Config
 from .constants import (
-    INCORRECT_WEBSITES_MESSAGE,
+    INCORRECT_WEBSITES_TEXT,
     LAUNCH_TIME,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
-    SUCCESS_COMPLETE_MESSAGE,
+    SUCCESS_COMPLETE_TITLE,
+    TIME_ELAPSED_TEXT,
 )
 from .extensions import ConfigException, ProgressBar
 from .output_file import OutputFile
@@ -32,7 +33,7 @@ class LPParser:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL as error:
-            raise ConfigException(INCORRECT_WEBSITES_MESSAGE) from error
+            raise ConfigException(INCORRECT_WEBSITES_TEXT) from error
         if not self.__check_release_date(soup):
             return
         self.__parse(url, soup)
@@ -96,12 +97,9 @@ class LPParser:
             await asyncio.gather(*processes)
         self.output_file.complete_output()
         elapsed_time = get_launch_time() - LAUNCH_TIME
-        # fmt: off
         print(
-            paint_text(
-                SUCCESS_COMPLETE_MESSAGE.format(
-                    elapsed_time=elapsed_time,
-                    output_file_path=self.output_file.output_file_path,
-                ), 32
-            )
+            paint_text(SUCCESS_COMPLETE_TITLE, 32, True) + " " * 128,
+            paint_text(TIME_ELAPSED_TEXT.format(time=elapsed_time), 36),
+            f"--> {self.output_file.output_file_path}",
+            sep="\n",
         )

@@ -1,15 +1,15 @@
-import re
 from calendar import monthrange
 
 import yaml
 
 from .constants import (
-    FILE_NOT_FOUND_MESSAGE,
-    INCORRECT_OFFSET_MESSAGE,
-    INCORRECT_RELEASE_DATE_MESSAGE,
+    FILE_NOT_FOUND_TEXT,
+    INCORRECT_OFFSET_TEXT,
+    INCORRECT_RELEASE_DATE_TEXT,
     LAUNCH_TIME,
 )
 from .extensions import ConfigException
+from .utils import compile_regex
 
 
 class Config:
@@ -24,7 +24,7 @@ class Config:
             with open(self.config_path) as file:
                 self.config = yaml.safe_load(file)
         except FileNotFoundError as error:
-            raise ConfigException(FILE_NOT_FOUND_MESSAGE) from error
+            raise ConfigException(FILE_NOT_FOUND_TEXT) from error
 
     def __parse_config(self) -> None:
         try:
@@ -36,10 +36,10 @@ class Config:
             )
             self.websites = self.config["websites"]
             self.exceptions = self.config["exceptions"]
-            self.login_regex = re.compile(
+            self.login_regex = compile_regex(
                 self.config["for_advanced_users"]["login_regex"]
             )
-            self.password_regex = re.compile(
+            self.password_regex = compile_regex(
                 self.config["for_advanced_users"]["password_regex"]
             )
         except (KeyError, TypeError, ConfigException) as error:
@@ -49,7 +49,7 @@ class Config:
         if not self.offset_bool:
             return 1
         if not isinstance(value, int) or value < 2:
-            raise ConfigException(INCORRECT_OFFSET_MESSAGE)
+            raise ConfigException(INCORRECT_OFFSET_TEXT)
         return value
 
     def __validate_release_date(self, values: list[int]) -> list[int] | None:
@@ -59,7 +59,7 @@ class Config:
             not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year
             for value in values
         ):
-            raise ConfigException(INCORRECT_RELEASE_DATE_MESSAGE)
+            raise ConfigException(INCORRECT_RELEASE_DATE_TEXT)
         return values
 
     def __calculate_totals(self) -> int:

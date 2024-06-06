@@ -1,7 +1,11 @@
 import asyncio
 
 from src.config import Config
-from src.constants import CONFIG_FILE_ERROR_MESSAGE, LPPARSER_LOGOTYPE
+from src.constants import (
+    CONFIG_FILE_ERROR_MESSAGE,
+    CONFIG_ERROR_TITLE,
+    LPPARSER_LOGOTYPE,
+)
 from src.extensions import ConfigException
 from src.lp_parser import LPParser
 from src.output_file import OutputFile
@@ -15,4 +19,7 @@ if __name__ == "__main__":
         parser = LPParser(config, output_file)
         asyncio.run(parser.main())
     except ConfigException as error:
-        print(f"{paint_text("CONFIG ERROR", 31)}\n--> {CONFIG_FILE_ERROR_MESSAGE.format(error=error)}")
+        print(
+            f"{paint_text(CONFIG_ERROR_TITLE, 31, True)}",
+            f"\n--> {CONFIG_FILE_ERROR_MESSAGE.format(error=error)}",
+        )
