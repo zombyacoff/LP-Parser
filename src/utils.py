@@ -3,8 +3,7 @@ from calendar import monthrange
 from datetime import datetime
 
 
-class ConfigException(Exception):
-    pass
+class ConfigException(Exception): ...
 
 
 def paint_text(text: str, color_code: int, bold=False) -> str:

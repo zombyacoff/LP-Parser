@@ -6,10 +6,9 @@ from src.constants import (
     CONFIG_FILE_ERROR_MESSAGE,
     LPPARSER_LOGOTYPE,
 )
-from src.extensions import ConfigException
 from src.lp_parser import LPParser
 from src.output_file import OutputFile
-from src.utils import paint_text
+from src.utils import ConfigException, paint_text
 
 if __name__ == "__main__":
     print(LPPARSER_LOGOTYPE)

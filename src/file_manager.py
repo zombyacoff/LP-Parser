@@ -9,6 +9,10 @@ class FileManager:
         os.makedirs(folder_path, exist_ok=True)
 
     @staticmethod
+    def join_paths(paths: list) -> str:
+        return os.path.join(*paths)
+
+    @staticmethod
     def safe_yaml_file(file_path: str) -> dict:
         with open(file_path) as file:
             return yaml.safe_load(file)

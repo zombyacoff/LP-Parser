@@ -26,7 +26,7 @@ class LPParser:
     async def __process_url(self, url: str, session: aiohttp.ClientSession) -> None:
         try:
             async with session.get(url) as page:
-                ProgressBar.show_progress_bar(self.bar_counter, self.config.total_urls)
+                ProgressBar.show(self.bar_counter, self.config.total_urls)
                 self.bar_counter += 1
                 if page.status != 200:
                     return
@@ -97,7 +97,12 @@ class LPParser:
         self.output_file.complete_output()
         elapsed_time = get_launch_time() - LAUNCH_TIME
         print(
-            paint_text(SUCCESS_COMPLETE_TITLE, 32, True) + " " * 128,
+            paint_text(SUCCESS_COMPLETE_TITLE, 32, True)
+            + " "
+            * (
+                ProgressBar.get_length(self.config.total_urls)
+                - len(SUCCESS_COMPLETE_TITLE)
+            ),
             paint_text(TIME_ELAPSED_TEXT.format(time=elapsed_time), 36),
             f"--> {self.output_file.output_file_path}",
             sep="\n",
