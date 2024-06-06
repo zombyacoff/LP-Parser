@@ -1,9 +1,6 @@
 from .constants import FULL_CHAR, HALF_CHAR, PERCENT_PROGRESS, TOTAL_PROGRESS
 
 
-class ConfigException(Exception): ...
-
-
 class ProgressBar:
     """
     Progress bar example:

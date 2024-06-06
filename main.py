@@ -2,8 +2,8 @@ import asyncio
 
 from src.config import Config
 from src.constants import (
-    CONFIG_FILE_ERROR_MESSAGE,
     CONFIG_ERROR_TITLE,
+    CONFIG_FILE_ERROR_MESSAGE,
     LPPARSER_LOGOTYPE,
 )
 from src.extensions import ConfigException

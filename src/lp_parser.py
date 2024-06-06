@@ -1,5 +1,4 @@
 import asyncio
-from calendar import monthrange
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -13,9 +12,9 @@ from .constants import (
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
 )
-from .extensions import ConfigException, ProgressBar
+from .progress_bar import ProgressBar
 from .output_file import OutputFile
-from .utils import get_launch_time, paint_text
+from .utils import ConfigException, get_launch_time, get_monthrange, paint_text
 
 
 class LPParser:
@@ -85,7 +84,7 @@ class LPParser:
                     else f"{url}-{month:02}-{day:02}"
                 )
                 for month in range(1, self.config.total_months + 1)
-                for day in range(1, monthrange(2020, month)[1] + 1)
+                for day in range(1, get_monthrange(month) + 1)
                 for offset in range(1, self.config.offset_value + 1)
                 for url in self.config.websites
             ]

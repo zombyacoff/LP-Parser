@@ -1,15 +1,10 @@
-from calendar import monthrange
-
-import yaml
-
 from .constants import (
     FILE_NOT_FOUND_TEXT,
     INCORRECT_OFFSET_TEXT,
     INCORRECT_RELEASE_DATE_TEXT,
     LAUNCH_TIME,
 )
-from .extensions import ConfigException
-from .utils import compile_regex
+from .utils import ConfigException, FileManager, compile_regex, get_monthrange
 
 
 class Config:
@@ -21,8 +16,7 @@ class Config:
 
     def __load_config(self) -> None:
         try:
-            with open(self.config_path) as file:
-                self.config = yaml.safe_load(file)
+            self.config = FileManager.safe_yaml_file(self.config_path)
         except FileNotFoundError as error:
             raise ConfigException(FILE_NOT_FOUND_TEXT) from error
 
@@ -69,10 +63,7 @@ class Config:
             else 12
         )
         self.total_days = (
-            sum(
-                monthrange(LAUNCH_TIME.year, month)[1]
-                for month in range(1, self.total_months + 1)
-            )
+            sum(get_monthrange(month) for month in range(1, self.total_months + 1))
             if self.total_months != 12
             else 366
         )
