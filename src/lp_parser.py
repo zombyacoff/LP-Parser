@@ -12,8 +12,8 @@ from .constants import (
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
 )
-from .progress_bar import ProgressBar
 from .output_file import OutputFile
+from .progress_bar import ProgressBar
 from .utils import ConfigException, get_launch_time, get_monthrange, paint_text
 
 
