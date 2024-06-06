@@ -6,7 +6,7 @@ The script can handle different date formats and offset values for URLs, checkin
 It's initially designed for [Telegraph](https://telegra.ph/), but you can try some other websites, so free your imagination.
 
 ## Features
-- Configurable via `settings.yml`
+- Configurable via `config.yml`
 - Checks URL availability and extracts login credentials
 - Supports offset values for URL generation
 - Outputs results in a structured YAML file
@@ -26,7 +26,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
     ```
 
 ## Configuration
-### Edit `settings.yml` to configure the parser:
+### Edit `config.yml` to configure the parser:
    - **websites_list**: List of base URLs to parse.
    - **exceptions_list**: List of emails to exclude from parsing.
    - **offset**: Configure offset for URL generation.
@@ -34,7 +34,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 #### If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
    - **login_regex**: Change what will count as a login, by default we have email.
    - **password_regex**: Customize what will count as a password, by default we have password that contains digit.
-### Example of settings.yml
+### Example of config.yml
 ```yaml
 offset:
   offset: true
