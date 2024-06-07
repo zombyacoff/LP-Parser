@@ -34,13 +34,16 @@ class Parser:
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL:
             raise InvalidWebsiteURLError(url=url) from None
+
         if not self._check_release_date(soup):
             return
+
         self._parse(url, soup)
 
     def _check_release_date(self, soup: BeautifulSoup) -> bool:
         if not self.config.release_date_bool:
             return True
+
         time_element = soup.select_one("time")
         release_date = (
             int(time_element.get_text("\n", strip=True)[-4:])
@@ -129,5 +132,6 @@ class Parser:
             ]
             print(paint_text(PARSING_START_MESSAGE, 33))
             await asyncio.gather(*processes)
+
         self.output_file.complete_output()
         self._get_complete_message()
