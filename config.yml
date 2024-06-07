@@ -1,17 +1,17 @@
 offset:
-  offset: true
+  offset: false
   value: 2 # min 2 : max 250
 
 release_date:
   release_date: false
   years:
-  - 2024
+  -
 
 websites: # example: https://telegra.ph/steam
-- https://telegra.ph/steam
+-
 
 exceptions: # telegra.ph: dmca@telegram.org
-- dmca@telegram.org
+-
 
 # DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
 for_advanced_users:
