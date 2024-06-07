@@ -19,4 +19,4 @@ class OutputFile:
 
     def complete_output(self) -> None:
         FileManager.create_folder(OUTPUT_FOLDER_NAME)
-        FileManager.damp_yaml_file(self.output_file_path, self.output_data)
+        FileManager.dump_yaml_file(self.output_file_path, self.output_data)
