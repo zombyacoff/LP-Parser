@@ -19,7 +19,7 @@ def main() -> None:
     try:
         config = Config()
         output_file = OutputFile()
-        parser = Parser(config=config, output_file=output_file)
+        parser = Parser(config, output_file)
         asyncio.run(parser.main())
     except (
         ConfigException,
