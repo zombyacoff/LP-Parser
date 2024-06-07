@@ -1,10 +1,4 @@
-from .constants import (
-    FULL_CHAR,
-    HALF_CHAR,
-    PERCENT_PROGRESS,
-    RAW_PROGRESS_BAR_LENGTH,
-    TOTAL_PROGRESS,
-)
+from .constants import *
 from .utils import paint_text
 
 
