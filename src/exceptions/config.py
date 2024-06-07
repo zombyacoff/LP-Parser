@@ -24,7 +24,7 @@ class ConfigNotFoundError(ConfigException):
         return FILE_NOT_FOUND_TEXT
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class InvalidOffsetValueError(ConfigException):
     offset_value: any
 
@@ -33,7 +33,7 @@ class InvalidOffsetValueError(ConfigException):
         return INVALID_OFFSET_TEXT.format(offset_value=self.offset_value)
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class InvalidReleaseDateError(ConfigException):
     release_date: any
 
@@ -42,7 +42,7 @@ class InvalidReleaseDateError(ConfigException):
         return INVALID_RELEASE_DATE_TEXT.format(release_date=self.release_date)
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class InvalidWebsiteURLError(ConfigException):
     url: any
 
