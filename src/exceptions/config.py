@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .base import ApplicationException
 from .messages import (
     CONFIG_FILE_ERROR_MESSAGE,
-    FILE_NOT_FOUND_TEXT,
+    CONFIG_NOT_FOUND_TEXT,
     INVALID_OFFSET_TEXT,
     INVALID_RELEASE_DATE_TEXT,
     INVALID_WEBSITES_TEXT,
@@ -21,7 +21,7 @@ class ConfigException(ApplicationException):
 class ConfigNotFoundError(ConfigException):
     @property
     def message(self) -> str:
-        return FILE_NOT_FOUND_TEXT
+        return CONFIG_NOT_FOUND_TEXT
 
 
 @dataclass(frozen=True, eq=False)

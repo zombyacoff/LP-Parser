@@ -1,8 +1,8 @@
 import asyncio
+from typing import Generator
 
 import aiohttp
 from bs4 import BeautifulSoup
-from typing import Generator
 
 from .config import Config
 from .constants import (
