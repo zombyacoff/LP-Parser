@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from .base import ApplicationException
-
 from ..constants.constants import (
     CONFIG_FILE_ERROR_MESSAGE,
     FILE_NOT_FOUND_TEXT,
@@ -9,6 +7,7 @@ from ..constants.constants import (
     INVALID_RELEASE_DATE_TEXT,
     INVALID_WEBSITES_TEXT,
 )
+from .base import ApplicationException
 
 
 class ConfigException(ApplicationException):
