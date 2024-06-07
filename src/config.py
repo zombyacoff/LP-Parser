@@ -44,7 +44,7 @@ class Config:
     def __validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
-        if type(value) != int or value < 2 or value > 250:
+        if not isinstance(value, int) or value < 2 or value > 250:
             raise InvalidOffsetValueError(offset_value=value)
         return value
 
@@ -52,7 +52,7 @@ class Config:
         if not self.release_date_bool:
             return None
         for value in values:
-            if type(value) != int or value < 0 or value > LAUNCH_TIME.year:
+            if not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year:
                 raise InvalidReleaseDateError(release_date=value)
         return values
 

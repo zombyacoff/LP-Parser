@@ -2,6 +2,7 @@ import asyncio
 
 import aiohttp
 from bs4 import BeautifulSoup
+from typing import Generator
 
 from .config import Config
 from .constants import (
@@ -73,18 +74,27 @@ class Parser:
                 break
         return login, password
 
-    def __generate_urls(self) -> list[str]:
-        return [
-            (
-                f"{url}-{month:02}-{day:02}-{offset}"
-                if offset > 1
-                else f"{url}-{month:02}-{day:02}"
-            )
-            for month in range(1, self.config.total_months + 1)
-            for day in range(1, get_monthrange(month) + 1)
-            for offset in range(1, self.config.offset_value + 1)
-            for url in self.config.websites
-        ]
+    def __generate_urls(self) -> Generator[str, None, None]:
+        # return [
+        #     (
+        #         f"{url}-{month:02}-{day:02}-{offset}"
+        #         if offset > 1
+        #         else f"{url}-{month:02}-{day:02}"
+        #     )
+        #     for month in range(1, self.config.total_months + 1)
+        #     for day in range(1, get_monthrange(month) + 1)
+        #     for offset in range(1, self.config.offset_value + 1)
+        #     for url in self.config.websites
+        # ]
+        for month in range(1, self.config.total_months + 1):
+            for day in range(1, get_monthrange(month) + 1):
+                for offset in range(1, self.config.offset_value + 1):
+                    for url in self.config.websites:
+                        yield (
+                            f"{url}-{month:02}-{day:02}-{offset}"
+                            if offset > 1
+                            else f"{url}-{month:02}-{day:02}"
+                        )
 
     async def __semaphore_process(
         self, url: str, semaphore: asyncio.Semaphore, session: aiohttp.ClientSession
@@ -93,6 +103,9 @@ class Parser:
             await self.__process_url(url, session)
 
     def __get_complete_message(self) -> None:
+        # SUCCESSFULLY COMPLETED
+        # Time elapsed: 0:00:01.012345
+        # --> parser-output\output_file_name.yml
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             paint_text(SUCCESS_COMPLETE_TITLE, 32, True)
@@ -109,9 +122,10 @@ class Parser:
     async def main(self) -> None:
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         async with aiohttp.ClientSession() as session:
-            urls = self.__generate_urls()
+            urls_generator = self.__generate_urls()
             processes = [
-                self.__semaphore_process(url, semaphore, session) for url in urls
+                self.__semaphore_process(url, semaphore, session)
+                for url in urls_generator
             ]
             print(paint_text(PARSING_START_MESSAGE, 33))
             await asyncio.gather(*processes)

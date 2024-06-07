@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from .base import ApplicationException
-from .constants import (
+from .messages import (
     CONFIG_FILE_ERROR_MESSAGE,
     FILE_NOT_FOUND_TEXT,
     INVALID_OFFSET_TEXT,

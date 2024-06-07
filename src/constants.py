@@ -1,7 +1,7 @@
 from .utils import get_time_now
 
 LAUNCH_TIME = get_time_now()
-SEMAPHORE_MAX_LIMIT = 100
+SEMAPHORE_MAX_LIMIT = 150
 LPPARSER_LOGOTYPE = r"""_      ___         ___                               
 | |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
 | |__  |  _/ |___| |  _/ / _` | | '_| (_-< / -_) | '_|
