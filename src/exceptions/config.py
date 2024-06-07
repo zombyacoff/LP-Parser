@@ -1,26 +1,14 @@
 from dataclasses import dataclass
 
+from base import ApplicationException
+
 from ..constants.constants import (
     CONFIG_FILE_ERROR_MESSAGE,
-    ERROR_TITLE,
     FILE_NOT_FOUND_TEXT,
     INCORRECT_OFFSET_TEXT,
     INCORRECT_RELEASE_DATE_TEXT,
     INCORRECT_WEBSITES_TEXT,
 )
-from ..extensions.utils import paint_text
-
-
-class ApplicationException(Exception):
-    """Base class for all application exceptions"""
-
-    @staticmethod
-    def get_error_message(exception: Exception) -> str:
-        print(
-            paint_text(ERROR_TITLE, 31, True),
-            exception.message,
-            sep="\n",
-        )
 
 
 class ConfigException(ApplicationException):
