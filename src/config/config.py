@@ -1,9 +1,9 @@
 from ..constants.constants import LAUNCH_TIME
-from ..exceptions.exceptions import (
+from ..exceptions.config import (
     ConfigException,
     ConfigNotFoundError,
-    IncorrectOffsetError,
-    IncorrectReleaseDateError,
+    InvalidOffsetValueError,
+    InvalidReleaseDateError,
 )
 from ..extensions.utils import compile_regex, get_monthrange
 from ..file_operations.file_manager import FileManager
@@ -40,24 +40,20 @@ class Config:
             )
         except (KeyError, TypeError):
             raise ConfigException
-        except IncorrectOffsetError:
-            raise IncorrectOffsetError
-        except IncorrectReleaseDateError:
-            raise IncorrectReleaseDateError
 
     def __validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
-        if not isinstance(value, int) or value < 2:
-            raise IncorrectOffsetError
+        if type(value) != int or value < 2 or value > 250:
+            raise InvalidOffsetValueError(offset_value=value)
         return value
 
     def __validate_release_date(self, values: list[int]) -> list[int] | None:
         if not self.release_date_bool:
             return None
         for value in values:
-            if not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year:
-                raise IncorrectReleaseDateError(release_date=value)
+            if type(value) != int or value < 0 or value > LAUNCH_TIME.year:
+                raise InvalidReleaseDateError(release_date=value)
         return values
 
     def __calculate_totals(self) -> int:

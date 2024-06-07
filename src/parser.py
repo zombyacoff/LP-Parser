@@ -12,7 +12,7 @@ from .constants.constants import (
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
 )
-from .exceptions.exceptions import IncorrectWebsitesError
+from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
 from .extensions.utils import get_monthrange, get_time_now, paint_text
 from .file_operations.output_file import OutputFile
@@ -33,7 +33,7 @@ class Parser:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL:
-            raise IncorrectWebsitesError(url=url)
+            raise InvalidWebsiteURLError(url=url)
         if not self.__check_release_date(soup):
             return
         self.__parse(url, soup)

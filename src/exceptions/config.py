@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from base import ApplicationException
+from .base import ApplicationException
 
 from ..constants.constants import (
     CONFIG_FILE_ERROR_MESSAGE,
     FILE_NOT_FOUND_TEXT,
-    INCORRECT_OFFSET_TEXT,
-    INCORRECT_RELEASE_DATE_TEXT,
-    INCORRECT_WEBSITES_TEXT,
+    INVALID_OFFSET_TEXT,
+    INVALID_RELEASE_DATE_TEXT,
+    INVALID_WEBSITES_TEXT,
 )
 
 
@@ -25,25 +25,28 @@ class ConfigNotFoundError(ConfigException):
         return FILE_NOT_FOUND_TEXT
 
 
-class IncorrectOffsetError(ConfigException):
+@dataclass
+class InvalidOffsetValueError(ConfigException):
+    offset_value: any
+
     @property
     def message(self) -> str:
-        return INCORRECT_OFFSET_TEXT
+        return INVALID_OFFSET_TEXT.format(offset_value=self.offset_value)
 
 
 @dataclass
-class IncorrectReleaseDateError(ConfigException):
+class InvalidReleaseDateError(ConfigException):
     release_date: any
 
     @property
     def message(self) -> str:
-        return INCORRECT_RELEASE_DATE_TEXT.format(release_date=self.release_date)
+        return INVALID_RELEASE_DATE_TEXT.format(release_date=self.release_date)
 
 
 @dataclass
-class IncorrectWebsitesError(ConfigException):
+class InvalidWebsiteURLError(ConfigException):
     url: any
 
     @property
     def message(self) -> str:
-        return INCORRECT_WEBSITES_TEXT.format(url=self.url)
+        return INVALID_WEBSITES_TEXT.format(url=self.url)
