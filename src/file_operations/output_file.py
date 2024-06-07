@@ -5,7 +5,7 @@ from .constants import OUTPUT_FILE_PATTERN, OUTPUT_FOLDER_NAME
 from .file_manager import FileManager
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class OutputFile:
     output_data = OUTPUT_FILE_PATTERN
     launch_time_format = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
