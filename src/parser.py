@@ -24,7 +24,7 @@ class Parser:
         self.output_file = output_file
         self.bar_counter = 1
 
-    async def __process_url(self, url: str, session: aiohttp.ClientSession) -> None:
+    async def _process_url(self, url: str, session: aiohttp.ClientSession) -> None:
         try:
             async with session.get(url) as page:
                 ProgressBar.show(self.bar_counter, self.config.total_urls)
@@ -34,11 +34,11 @@ class Parser:
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL:
             raise InvalidWebsiteURLError(url=url) from None
-        if not self.__check_release_date(soup):
+        if not self._check_release_date(soup):
             return
-        self.__parse(url, soup)
+        self._parse(url, soup)
 
-    def __check_release_date(self, soup: BeautifulSoup) -> bool:
+    def _check_release_date(self, soup: BeautifulSoup) -> bool:
         if not self.config.release_date_bool:
             return True
         time_element = soup.select_one("time")
@@ -49,13 +49,13 @@ class Parser:
         )
         return release_date in self.config.release_date
 
-    def __parse(self, url: str, soup: BeautifulSoup) -> None:
+    def _parse(self, url: str, soup: BeautifulSoup) -> None:
         website_text = list(soup.stripped_strings)
-        output_data = self.__extract_credentials(website_text) + (url,)
+        output_data = self._extract_credentials(website_text) + (url,)
         if output_data[0] != "":
             self.output_file.write_output(output_data)
 
-    def __extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
+    def _extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
@@ -74,7 +74,7 @@ class Parser:
                 break
         return login, password
 
-    def __generate_urls(self) -> Generator[str, None, None]:
+    def _generate_urls(self) -> Generator[str, None, None]:
         # return [
         #     (
         #         f"{url}-{month:02}-{day:02}-{offset}"
@@ -96,13 +96,13 @@ class Parser:
                             else f"{url}-{month:02}-{day:02}"
                         )
 
-    async def __semaphore_process(
+    async def _semaphore_process(
         self, url: str, semaphore: asyncio.Semaphore, session: aiohttp.ClientSession
     ) -> None:
         async with semaphore:
-            await self.__process_url(url, session)
+            await self._process_url(url, session)
 
-    def __get_complete_message(self) -> None:
+    def _get_complete_message(self) -> None:
         # SUCCESSFULLY COMPLETED
         # Time elapsed: 0:00:01.012345
         # --> parser-output\output_file_name.yml
@@ -114,7 +114,7 @@ class Parser:
                 ProgressBar.get_length(self.config.total_urls)
                 - len(SUCCESS_COMPLETE_TITLE)
             ),
-            paint_text(TIME_ELAPSED_TEXT.format(time=elapsed_time), 36),
+            paint_text(TIME_ELAPSED_TEXT.format(time=elapsed_time), 33),
             f"--> {self.output_file.output_file_path}",
             sep="\n",
         )
@@ -122,12 +122,12 @@ class Parser:
     async def main(self) -> None:
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         async with aiohttp.ClientSession() as session:
-            urls_generator = self.__generate_urls()
+            urls_generator = self._generate_urls()
             processes = [
-                self.__semaphore_process(url, semaphore, session)
+                self._semaphore_process(url, semaphore, session)
                 for url in urls_generator
             ]
             print(paint_text(PARSING_START_MESSAGE, 33))
             await asyncio.gather(*processes)
         self.output_file.complete_output()
-        self.__get_complete_message()
+        self._get_complete_message()

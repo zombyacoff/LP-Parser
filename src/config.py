@@ -12,22 +12,22 @@ from .utils import compile_regex, get_monthrange
 class Config:
     def __init__(self, config_path="config.yml") -> None:
         self.config_path = config_path
-        self.__load_config()
-        self.__parse_config()
-        self.__calculate_totals()
+        self._load_config()
+        self._parse_config()
+        self._calculate_totals()
 
-    def __load_config(self) -> None:
+    def _load_config(self) -> None:
         try:
             self.config = FileManager.safe_yaml_file(self.config_path)
         except FileNotFoundError:
             raise ConfigNotFoundError from None
 
-    def __parse_config(self) -> None:
+    def _parse_config(self) -> None:
         try:
             self.offset_bool = self.config["offset"]["offset"]
-            self.offset_value = self.__validate_offset(self.config["offset"]["value"])
+            self.offset_value = self._validate_offset(self.config["offset"]["value"])
             self.release_date_bool = self.config["release_date"]["release_date"]
-            self.release_date = self.__validate_release_date(
+            self.release_date = self._validate_release_date(
                 self.config["release_date"]["years"]
             )
             self.websites = self.config["websites"]
@@ -41,14 +41,14 @@ class Config:
         except (KeyError, TypeError):
             raise ConfigException from None
 
-    def __validate_offset(self, value: int) -> int:
+    def _validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
         if not isinstance(value, int) or value < 2 or value > 250:
             raise InvalidOffsetValueError(offset_value=value)
         return value
 
-    def __validate_release_date(self, values: list[int]) -> list[int] | None:
+    def _validate_release_date(self, values: list[int]) -> list[int] | None:
         if not self.release_date_bool:
             return None
         for value in values:
@@ -56,7 +56,7 @@ class Config:
                 raise InvalidReleaseDateError(release_date=value)
         return values
 
-    def __calculate_totals(self) -> int:
+    def _calculate_totals(self) -> None:
         self.total_months = (
             LAUNCH_TIME.month
             if self.release_date_bool and self.release_date == [LAUNCH_TIME.year]
