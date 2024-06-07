@@ -13,7 +13,7 @@ from .constants import (
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
-from .extensions.utils import get_monthrange, get_time_now, paint_text
+from .utils import get_monthrange, get_time_now, paint_text
 from .file_operations.output_file import OutputFile
 
 

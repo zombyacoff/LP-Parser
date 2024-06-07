@@ -1,0 +1,6 @@
+ERROR_TITLE = "APPLICATION ERROR"
+CONFIG_FILE_ERROR_MESSAGE = "The config.yml file is incorrect"
+FILE_NOT_FOUND_TEXT = "The config.yml file is missing"
+INVALID_OFFSET_TEXT = "Offset value is incorrect: {offset_value} (value must be an integer and greater than 2)"
+INVALID_RELEASE_DATE_TEXT = "Invalid release date: {release_date}"
+INVALID_WEBSITES_TEXT = "Invalid url in websites list: {url}"

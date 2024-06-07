@@ -5,7 +5,7 @@ from .exceptions.config import (
     InvalidOffsetValueError,
     InvalidReleaseDateError,
 )
-from .extensions.utils import compile_regex, get_monthrange
+from .utils import compile_regex, get_monthrange
 from .file_operations.file_manager import FileManager
 
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..constants import (
+from .constants import (
     CONFIG_FILE_ERROR_MESSAGE,
     FILE_NOT_FOUND_TEXT,
     INVALID_OFFSET_TEXT,
