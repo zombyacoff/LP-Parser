@@ -3,9 +3,6 @@ from calendar import monthrange
 from datetime import datetime
 
 
-class ConfigException(Exception): ...
-
-
 def paint_text(text: str, color_code: int, bold=False) -> str:
     return (
         f"\033[1;{color_code}m{text}\033[0m"
@@ -14,7 +11,7 @@ def paint_text(text: str, color_code: int, bold=False) -> str:
     )
 
 
-def get_launch_time() -> datetime:
+def get_time_now() -> datetime:
     return datetime.now()
 
 

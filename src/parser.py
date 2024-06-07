@@ -1,27 +1,28 @@
 import asyncio
+from dataclasses import dataclass
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from .config import Config
-from .constants import (
-    INCORRECT_WEBSITES_TEXT,
+from .config.config import Config
+from .constants.constants import (
     LAUNCH_TIME,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
 )
-from .output_file import OutputFile
-from .progress_bar import ProgressBar
-from .utils import ConfigException, get_launch_time, get_monthrange, paint_text
+from .exceptions.exceptions import IncorrectWebsitesError
+from .extensions.progress_bar import ProgressBar
+from .extensions.utils import get_monthrange, get_time_now, paint_text
+from .file_operations.output_file import OutputFile
 
 
-class LPParser:
-    def __init__(self, config: Config, output_file: OutputFile) -> None:
-        self.config = config
-        self.output_file = output_file
-        self.bar_counter = 1
+@dataclass
+class Parser:
+    config: Config
+    output_file: OutputFile
+    bar_counter = 1
 
     async def __process_url(self, url: str, session: aiohttp.ClientSession) -> None:
         try:
@@ -31,8 +32,8 @@ class LPParser:
                 if page.status != 200:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
-        except aiohttp.InvalidURL as error:
-            raise ConfigException(INCORRECT_WEBSITES_TEXT) from error
+        except aiohttp.InvalidURL:
+            raise IncorrectWebsitesError(url=url)
         if not self.__check_release_date(soup):
             return
         self.__parse(url, soup)
@@ -92,8 +93,8 @@ class LPParser:
         async with semaphore:
             await self.__process_url(url, session)
 
-    def __complete_print(self) -> None:
-        elapsed_time = get_launch_time() - LAUNCH_TIME
+    def __get_complete_message(self) -> None:
+        elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             paint_text(SUCCESS_COMPLETE_TITLE, 32, True)
             + " "
@@ -116,4 +117,4 @@ class LPParser:
             print(paint_text(PARSING_START_MESSAGE, 33))
             await asyncio.gather(*processes)
         self.output_file.complete_output()
-        self.__complete_print()
+        self.__get_complete_message()

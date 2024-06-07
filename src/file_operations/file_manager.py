@@ -9,7 +9,7 @@ class FileManager:
         os.makedirs(folder_path, exist_ok=True)
 
     @staticmethod
-    def join_paths(paths: list) -> str:
+    def join_paths(paths: tuple[str]) -> str:
         return os.path.join(*paths)
 
     @staticmethod

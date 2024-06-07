@@ -1,4 +1,4 @@
-from .utils import get_launch_time
+from ..extensions.utils import get_time_now
 
 LPPARSER_LOGOTYPE = r"""_      ___         ___                               
 | |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
@@ -6,7 +6,7 @@ LPPARSER_LOGOTYPE = r"""_      ___         ___
 |____| |_|         |_|   \__,_| |_|   /__/ \___| |_|  
 """
 
-LAUNCH_TIME = get_launch_time()
+LAUNCH_TIME = get_time_now()
 
 SEMAPHORE_MAX_LIMIT = 100
 
@@ -17,16 +17,19 @@ FULL_CHAR = "█"
 HALF_CHAR = "▒"
 TOTAL_PROGRESS = "[{current}/{total}]"  # [15/100]
 PERCENT_PROGRESS = "[{percent:.2f}%]"  # [15.00%]
+RAW_PROGRESS_BAR_LENGTH = 64
 
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
-CONFIG_ERROR_TITLE = "CONFIG ERROR"
+
+ERROR_TITLE = "APPLICATION ERROR"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
+
 TIME_ELAPSED_TEXT = "Time elapsed: {time}"
-CONFIG_FILE_ERROR_MESSAGE = "The config.yml file is incorrect: {error}"
-FILE_NOT_FOUND_TEXT = "the config.yml file is missing!"
+CONFIG_FILE_ERROR_MESSAGE = "The config.yml file is incorrect"
+FILE_NOT_FOUND_TEXT = "The config.yml file is missing"
 INCORRECT_OFFSET_TEXT = (
-    "offset value is incorrect (value must be an integer and greater than 2)"
+    "Offset value is incorrect (value must be an integer and greater than 2)"
 )
-INCORRECT_RELEASE_DATE_TEXT = "release date list is incorrect"
-INCORRECT_WEBSITES_TEXT = "websites is incorrect"
+INCORRECT_RELEASE_DATE_TEXT = "Invalid release date: {release_date}"
+INCORRECT_WEBSITES_TEXT = "Invalid url in websites list: {url}"

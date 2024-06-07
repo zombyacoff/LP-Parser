@@ -1,15 +1,16 @@
-from .constants import (
-    FILE_NOT_FOUND_TEXT,
-    INCORRECT_OFFSET_TEXT,
-    INCORRECT_RELEASE_DATE_TEXT,
-    LAUNCH_TIME,
+from ..constants.constants import LAUNCH_TIME
+from ..exceptions.exceptions import (
+    ConfigException,
+    ConfigNotFoundError,
+    IncorrectOffsetError,
+    IncorrectReleaseDateError,
 )
-from .file_manager import FileManager
-from .utils import ConfigException, compile_regex, get_monthrange
+from ..extensions.utils import compile_regex, get_monthrange
+from ..file_operations.file_manager import FileManager
 
 
 class Config:
-    def __init__(self, config_path="config/config.yml") -> None:
+    def __init__(self, config_path="config.yml") -> None:
         self.config_path = config_path
         self.__load_config()
         self.__parse_config()
@@ -18,8 +19,8 @@ class Config:
     def __load_config(self) -> None:
         try:
             self.config = FileManager.safe_yaml_file(self.config_path)
-        except FileNotFoundError as error:
-            raise ConfigException(FILE_NOT_FOUND_TEXT) from error
+        except FileNotFoundError:
+            raise ConfigNotFoundError
 
     def __parse_config(self) -> None:
         try:
@@ -37,24 +38,26 @@ class Config:
             self.password_regex = compile_regex(
                 self.config["for_advanced_users"]["password_regex"]
             )
-        except (KeyError, TypeError, ConfigException) as error:
-            raise ConfigException(error) from error
+        except (KeyError, TypeError):
+            raise ConfigException
+        except IncorrectOffsetError:
+            raise IncorrectOffsetError
+        except IncorrectReleaseDateError:
+            raise IncorrectReleaseDateError
 
     def __validate_offset(self, value: int) -> int:
         if not self.offset_bool:
             return 1
         if not isinstance(value, int) or value < 2:
-            raise ConfigException(INCORRECT_OFFSET_TEXT)
+            raise IncorrectOffsetError
         return value
 
     def __validate_release_date(self, values: list[int]) -> list[int] | None:
         if not self.release_date_bool:
             return None
-        if any(
-            not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year
-            for value in values
-        ):
-            raise ConfigException(INCORRECT_RELEASE_DATE_TEXT)
+        for value in values:
+            if not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year:
+                raise IncorrectReleaseDateError(release_date=value)
         return values
 
     def __calculate_totals(self) -> int:

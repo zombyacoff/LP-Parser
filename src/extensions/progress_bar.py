@@ -1,4 +1,10 @@
-from .constants import FULL_CHAR, HALF_CHAR, PERCENT_PROGRESS, TOTAL_PROGRESS
+from ..constants.constants import (
+    FULL_CHAR,
+    HALF_CHAR,
+    PERCENT_PROGRESS,
+    RAW_PROGRESS_BAR_LENGTH,
+    TOTAL_PROGRESS,
+)
 from .utils import paint_text
 
 
@@ -17,4 +23,4 @@ class ProgressBar:
 
     @staticmethod
     def get_length(total: int) -> int:
-        return 64 + len(str(total)) * 2
+        return RAW_PROGRESS_BAR_LENGTH + len(str(total)) * 2
