@@ -33,7 +33,7 @@ class Parser:
                     return
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL:
-            raise InvalidWebsiteURLError(url=url)
+            raise InvalidWebsiteURLError(url=url) from None
         if not self.__check_release_date(soup):
             return
         self.__parse(url, soup)

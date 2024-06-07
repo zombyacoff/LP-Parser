@@ -20,7 +20,7 @@ class Config:
         try:
             self.config = FileManager.safe_yaml_file(self.config_path)
         except FileNotFoundError:
-            raise ConfigNotFoundError
+            raise ConfigNotFoundError from None
 
     def __parse_config(self) -> None:
         try:
@@ -39,7 +39,7 @@ class Config:
                 self.config["for_advanced_users"]["password_regex"]
             )
         except (KeyError, TypeError):
-            raise ConfigException
+            raise ConfigException from None
 
     def __validate_offset(self, value: int) -> int:
         if not self.offset_bool:

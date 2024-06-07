@@ -17,11 +17,11 @@ class FileManager:
     @staticmethod
     def safe_yaml_file(file_path: str) -> dict:
         """Safely load yaml file"""
-        with open(file_path) as file:
+        with open(file_path, encoding="utf-8") as file:
             return yaml.safe_load(file)
 
     @staticmethod
     def dump_yaml_file(file_path: str, data: dict) -> None:
         """Dump yaml file"""
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             yaml.dump(data, file)
