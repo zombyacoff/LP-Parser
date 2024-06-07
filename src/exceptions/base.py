@@ -1,5 +1,5 @@
-from .constants import ERROR_TITLE
 from ..utils import paint_text
+from .constants import ERROR_TITLE
 
 
 class ApplicationException(Exception):

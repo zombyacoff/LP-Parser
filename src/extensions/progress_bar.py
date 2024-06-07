@@ -1,11 +1,11 @@
+from ..utils import paint_text
 from .constants import (
     FULL_CHAR,
     HALF_CHAR,
-    TOTAL_PROGRESS,
     PERCENT_PROGRESS,
     RAW_PROGRESS_BAR_LENGTH,
+    TOTAL_PROGRESS,
 )
-from ..utils import paint_text
 
 
 class ProgressBar:

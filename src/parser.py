@@ -13,8 +13,8 @@ from .constants import (
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
-from .utils import get_monthrange, get_time_now, paint_text
 from .file_operations.output_file import OutputFile
+from .utils import get_monthrange, get_time_now, paint_text
 
 
 class Parser:
