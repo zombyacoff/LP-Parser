@@ -1,12 +1,12 @@
-from ..constants.constants import LAUNCH_TIME
-from ..exceptions.config import (
+from .constants import LAUNCH_TIME
+from .exceptions.config import (
     ConfigException,
     ConfigNotFoundError,
     InvalidOffsetValueError,
     InvalidReleaseDateError,
 )
-from ..extensions.utils import compile_regex, get_monthrange
-from ..file_operations.file_manager import FileManager
+from .extensions.utils import compile_regex, get_monthrange
+from .file_operations.file_manager import FileManager
 
 
 class Config:

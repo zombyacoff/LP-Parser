@@ -1,4 +1,4 @@
-from ..constants.constants import ERROR_TITLE
+from ..constants import ERROR_TITLE
 from ..extensions.utils import paint_text
 
 

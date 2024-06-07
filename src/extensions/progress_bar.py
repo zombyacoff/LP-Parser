@@ -1,4 +1,4 @@
-from ..constants.constants import (
+from .constants import (
     FULL_CHAR,
     HALF_CHAR,
     PERCENT_PROGRESS,

@@ -1,11 +1,10 @@
 import asyncio
-from dataclasses import dataclass
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from .config.config import Config
-from .constants.constants import (
+from .config import Config
+from .constants import (
     LAUNCH_TIME,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
@@ -18,11 +17,11 @@ from .extensions.utils import get_monthrange, get_time_now, paint_text
 from .file_operations.output_file import OutputFile
 
 
-@dataclass
 class Parser:
-    config: Config
-    output_file: OutputFile
-    bar_counter = 1
+    def __init__(self, config: Config, output_file: OutputFile) -> None:
+        self.config = config
+        self.output_file = output_file
+        self.bar_counter = 1
 
     async def __process_url(self, url: str, session: aiohttp.ClientSession) -> None:
         try:

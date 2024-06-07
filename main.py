@@ -1,7 +1,7 @@
 import asyncio
 
-from src.config.config import Config
-from src.constants.constants import LPPARSER_LOGOTYPE
+from src.config import Config
+from src.constants import LPPARSER_LOGOTYPE
 from src.exceptions.base import ApplicationException
 from src.exceptions.config import (
     ConfigException,

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..constants.constants import LAUNCH_TIME, OUTPUT_FILE_PATTERN, OUTPUT_FOLDER_NAME
+from ..constants import LAUNCH_TIME, OUTPUT_FILE_PATTERN, OUTPUT_FOLDER_NAME
 from .file_manager import FileManager
 
 

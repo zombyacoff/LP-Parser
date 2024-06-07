@@ -1,4 +1,4 @@
-from ..extensions.utils import get_time_now
+from .extensions.utils import get_time_now
 
 LPPARSER_LOGOTYPE = r"""_      ___         ___                               
 | |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
@@ -12,12 +12,6 @@ SEMAPHORE_MAX_LIMIT = 100
 
 OUTPUT_FOLDER_NAME = "parser-output"
 OUTPUT_FILE_PATTERN = {"login": {}, "password": {}, "url": {}}
-
-FULL_CHAR = "█"
-HALF_CHAR = "▒"
-TOTAL_PROGRESS = "[{current}/{total}]"  # [15/100]
-PERCENT_PROGRESS = "[{percent:.2f}%]"  # [15.00%]
-RAW_PROGRESS_BAR_LENGTH = 64
 
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
