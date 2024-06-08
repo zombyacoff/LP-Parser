@@ -1,5 +1,5 @@
 import asyncio
-from typing import Generator, List, Tuple
+from typing import Generator
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -61,7 +61,7 @@ class Parser:
         if output_data[0] != "":
             self.output_file.write_output(output_data)
 
-    def _extract_credentials(self, website_text: List[str]) -> Tuple[str, str]:
+    def _extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)

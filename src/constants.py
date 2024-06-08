@@ -1,5 +1,10 @@
 from .utils import get_time_now
 
+CONFIG_FILE_NAME = "config.yml"
+
+OUTPUT_FILE_PATTERN = {"login": {}, "password": {}, "url": {}}
+OUTPUT_FOLDER_NAME = "parser-output"
+
 LAUNCH_TIME = get_time_now()
 SEMAPHORE_MAX_LIMIT = 150
 

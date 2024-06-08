@@ -18,6 +18,7 @@ class ConfigException(ApplicationException):
         return CONFIG_FILE_ERROR_MESSAGE
 
 
+@dataclass(frozen=True, eq=False)
 class ConfigNotFoundError(ConfigException):
     @property
     def message(self) -> str:

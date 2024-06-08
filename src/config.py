@@ -1,5 +1,3 @@
-from typing import List
-
 from .constants import LAUNCH_TIME
 from .exceptions.config import (
     ConfigException,
@@ -12,15 +10,15 @@ from .utils import compile_regex, get_monthrange
 
 
 class Config:
-    def __init__(self, config_path="config.yml") -> None:
-        self.config_path = config_path
+    def __init__(self, config_file_name) -> None:
+        self.config_file_name = config_file_name
         self._load_config()
         self._parse_config()
         self._calculate_totals()
 
     def _load_config(self) -> None:
         try:
-            self.config = FileManager.safe_yaml_file(self.config_path)
+            self.config = FileManager.safe_yaml_file(self.config_file_name)
         except FileNotFoundError:
             raise ConfigNotFoundError from None
 
@@ -52,7 +50,7 @@ class Config:
 
         return value
 
-    def _validate_release_date(self, values: List[any]) -> List[int] | None:
+    def _validate_release_date(self, values: list[any]) -> list[int] | None:
         if not self.release_date_bool:
             return None
 
