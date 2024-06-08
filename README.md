@@ -25,10 +25,10 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
    ```
 
 3. Go to the directory and install dependencies:
-    ```bash
-    cd LP-Parser
-    poetry install
-    ```
+   ```bash
+   cd LP-Parser
+   poetry install
+   ```
 
 ## Configuration
 ### Edit `config.yml` to configure the parser:
