@@ -1,4 +1,5 @@
-# LP-Parser / OUTDATED VERSION 0.1.91
+# LP-Parser
+## Outdated version 0.1.91
 `LP-Parser` is a Python script designed to parse login and password information from a list of websites. 
 The script can handle different date formats and offset values for URLs, checking for the existence of these URLs and extracting login & password credentials. 
 It's initially designed for [Telegraph](https://telegra.ph/), but you can try some other websites, so free your imagination.
