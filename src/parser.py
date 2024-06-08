@@ -81,17 +81,6 @@ class Parser:
         return login, password
 
     def _generate_urls(self) -> Generator[str, None, None]:
-        # return [
-        #     (
-        #         f"{url}-{month:02}-{day:02}-{offset}"
-        #         if offset > 1
-        #         else f"{url}-{month:02}-{day:02}"
-        #     )
-        #     for month in range(1, self.config.total_months + 1)
-        #     for day in range(1, get_monthrange(month) + 1)
-        #     for offset in range(1, self.config.offset_value + 1)
-        #     for url in self.config.websites
-        # ]
         for month in range(1, self.config.total_months + 1):
             for day in range(1, get_monthrange(month) + 1):
                 for offset in range(1, self.config.offset_value + 1):
@@ -111,7 +100,7 @@ class Parser:
     def _get_complete_message(self) -> None:
         # SUCCESSFULLY COMPLETED
         # Time elapsed: 0:00:01.012345
-        # --> parser-output\output_file_name.yml
+        # Output file path: parser-output\output_file_name.yml
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             paint_text(SUCCESS_COMPLETE_TITLE, GREEN, True)
