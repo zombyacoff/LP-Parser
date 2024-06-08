@@ -1,5 +1,5 @@
 import os
-
+from typing import Dict
 import yaml
 
 
@@ -15,13 +15,13 @@ class FileManager:
         return os.path.join(*paths)
 
     @staticmethod
-    def safe_yaml_file(file_path: str) -> dict:
+    def safe_yaml_file(file_path: str) -> Dict[any, any]:
         """Safely load yaml file"""
         with open(file_path, encoding="utf-8") as file:
             return yaml.safe_load(file)
 
     @staticmethod
-    def dump_yaml_file(file_path: str, data: dict) -> None:
+    def dump_yaml_file(file_path: str, data: Dict[any, any]) -> None:
         """Dump yaml file"""
         with open(file_path, "w", encoding="utf-8") as file:
             yaml.dump(data, file)

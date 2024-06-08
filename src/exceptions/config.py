@@ -44,7 +44,7 @@ class InvalidReleaseDateError(ConfigException):
 
 @dataclass(frozen=True, eq=False)
 class InvalidWebsiteURLError(ConfigException):
-    url: any
+    url: str
 
     @property
     def message(self) -> str:

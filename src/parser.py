@@ -1,5 +1,5 @@
 import asyncio
-from typing import Generator
+from typing import Generator, List, Tuple
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -11,6 +11,7 @@ from .constants import (
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
+    OUTPUT_FILE_PATH_MESSAGE,
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
@@ -58,7 +59,7 @@ class Parser:
         if output_data[0] != "":
             self.output_file.write_output(output_data)
 
-    def _extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
+    def _extract_credentials(self, website_text: List[str]) -> Tuple[str, str]:
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
@@ -117,8 +118,13 @@ class Parser:
                 ProgressBar.get_length(self.config.total_urls)
                 - len(SUCCESS_COMPLETE_TITLE)
             ),
-            paint_text(TIME_ELAPSED_TEXT.format(time=elapsed_time), 33),
-            f"--> {self.output_file.output_file_path}",
+            paint_text(
+                f"{TIME_ELAPSED_TEXT.format(time=elapsed_time)}\n"
+                f"{OUTPUT_FILE_PATH_MESSAGE.format(
+                    output_file_path=self.output_file.output_file_path
+                )}",
+                33,
+            ),
             sep="\n",
         )
 

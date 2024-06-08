@@ -1,3 +1,5 @@
+from typing import List
+
 from .constants import LAUNCH_TIME
 from .exceptions.config import (
     ConfigException,
@@ -41,21 +43,21 @@ class Config:
         except (KeyError, TypeError):
             raise ConfigException from None
 
-    def _validate_offset(self, value: int) -> int:
+    def _validate_offset(self, value: any) -> int:
         if not self.offset_bool:
             return 1
 
-        if not isinstance(value, int) or value < 2 or value > 250:
+        if not (isinstance(value, int) and 0 <= value <= 250):
             raise InvalidOffsetValueError(offset_value=value)
 
         return value
 
-    def _validate_release_date(self, values: list[int]) -> list[int] | None:
+    def _validate_release_date(self, values: List[any]) -> List[int] | None:
         if not self.release_date_bool:
             return None
 
         for value in values:
-            if not isinstance(value, int) or value < 0 or value > LAUNCH_TIME.year:
+            if not (isinstance(value, int) and 0 <= value <= LAUNCH_TIME.year):
                 raise InvalidReleaseDateError(release_date=value)
 
         return values

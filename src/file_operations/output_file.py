@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Tuple
 
 from ..constants import LAUNCH_TIME
 from .constants import OUTPUT_FILE_PATTERN, OUTPUT_FOLDER_NAME
@@ -13,7 +14,7 @@ class OutputFile:
     output_file_path = FileManager.join_paths(OUTPUT_FOLDER_NAME, output_file_name)
     output_file_index = 1
 
-    def write_output(self, data: tuple) -> None:
+    def write_output(self, data: Tuple[any]) -> None:
         for i, key in enumerate(self.output_data):
             self.output_data[key][self.output_file_index] = data[i]
         self.output_file_index += 1
