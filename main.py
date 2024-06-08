@@ -1,7 +1,4 @@
-#
-# The script was originally written for telegra.ph
-#
-
+from typing import Generator
 import asyncio
 import os
 import re
@@ -186,28 +183,32 @@ class LPParser:
                 password = password_match.group()
                 break
         return login, password
+    
+    def _generate_urls(self) -> Generator[str, None, None]:
+        for month in range(1, self.config.total_months + 1):
+            for day in range(1, monthrange(2020, month)[1] + 1):
+                for offset in range(1, self.config.offset_value + 1):
+                    for url in self.config.websites:
+                        yield (
+                            f"{url}-{month:02}-{day:02}-{offset}"
+                            if offset > 1
+                            else f"{url}-{month:02}-{day:02}"
+                        )
+
+    async def _semaphore_process(
+        self, url: str, semaphore: asyncio.Semaphore, session: aiohttp.ClientSession
+    ) -> None:
+        async with semaphore:
+            await self._process_url(url, session)
 
     async def main(self) -> None:
-        processes = []
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         async with aiohttp.ClientSession() as session:
-            for month in range(1, self.config.total_months + 1):
-                for day in range(1, monthrange(2020, month)[1] + 1):
-                    for offset in range(1, self.config.offset_value + 1):
-                        url_list = [
-                            (
-                                f"{url}-{month:02}-{day:02}-{offset}"
-                                if offset > 1
-                                else f"{url}-{month:02}-{day:02}"
-                            )
-                            for url in self.config.websites
-                        ]
-                        for url in url_list:
-                            async with semaphore:
-                                process = asyncio.create_task(
-                                    self._process_url(url, session)
-                                )
-                                processes.append(process)
+            url_generator = self._generate_urls()
+            processes = [
+                self._semaphore_process(url, semaphore, session)
+                for url in url_generator
+            ]
             print(
                 f"\nParsing has started..."
                 f"\n{paint_text(
