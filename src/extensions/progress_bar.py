@@ -11,8 +11,10 @@ from .constants import (
 class ProgressBar:
     @staticmethod
     def show(current: int, total: int) -> None:
-        """progress bar example
-        ████████████████████████████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒ [268/366] [73.22%]"""
+        """
+        Progress bar example:
+        ████████████████████████████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒ [268/366] [73.22%]
+        """
         percent = 100 * current / total
         current_bar_length = round(percent) // 2
         bar = current_bar_length * FULL_CHAR + (50 - current_bar_length) * HALF_CHAR

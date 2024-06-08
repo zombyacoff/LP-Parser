@@ -8,7 +8,7 @@ OUTPUT_FOLDER_NAME = "parser-output"
 LAUNCH_TIME = get_time_now()
 SEMAPHORE_MAX_LIMIT = 150
 
-# color codes
+# console color codes
 RED = 31
 GREEN = 32
 YELLOW = 33
