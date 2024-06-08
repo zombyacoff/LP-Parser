@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 
 from .config import Config
 from .constants import (
+    GREEN,
     LAUNCH_TIME,
     OUTPUT_FILE_PATH_MESSAGE,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
+    YELLOW,
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
@@ -112,7 +114,7 @@ class Parser:
         # --> parser-output\output_file_name.yml
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
-            paint_text(SUCCESS_COMPLETE_TITLE, 32, True)
+            paint_text(SUCCESS_COMPLETE_TITLE, GREEN, True)
             + " "
             * (
                 ProgressBar.get_length(self.config.total_urls)
@@ -123,7 +125,7 @@ class Parser:
                 f"{OUTPUT_FILE_PATH_MESSAGE.format(
                     output_file_path=self.output_file.output_file_path
                 )}",
-                33,
+                YELLOW,
             ),
             sep="\n",
         )

@@ -3,6 +3,11 @@ from .utils import get_time_now
 LAUNCH_TIME = get_time_now()
 SEMAPHORE_MAX_LIMIT = 150
 
+# color codes
+RED = 31
+GREEN = 32
+YELLOW = 33
+
 LPPARSER_LOGOTYPE = r"""_      ___         ___                               
 | |    | _ \  ___  | _ \  __ _   _ _   ___  ___   _ _ 
 | |__  |  _/ |___| |  _/ / _` | | '_| (_-< / -_) | '_|
