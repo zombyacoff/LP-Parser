@@ -61,19 +61,6 @@ for_advanced_users:
 ```
 
 ## Usage
-<!-- ### Windows 
-- Double-click the `start.bat` file to run the program.
-   
-### Unix-based Systems (Linux, macOS)
-1. Make the script executable:
-   ```bash
-   chmod +x start.sh
-   ```
-   
-2. Run the script:
-   ```bash
-   ./start.sh
-   ``` -->
 Run the script:
 ```bash
 poetry run python main.py
@@ -93,4 +80,3 @@ url:
   1. https://telegra.ph/steam-01-03
   2. https://telegra.ph/steam-01-03-2
 ```
-
