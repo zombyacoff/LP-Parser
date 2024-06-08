@@ -1,17 +1,16 @@
-from typing import Generator
 import asyncio
 import os
 import re
-from datetime import datetime
 from calendar import monthrange
-import aiohttp
-from bs4 import BeautifulSoup
-import yaml
+from datetime import datetime
+from typing import Generator
 
+import aiohttp
+import yaml
+from bs4 import BeautifulSoup
 
 LAUNCH_TIME = datetime.now()
-SEMAPHORE_MAX_LIMIT = 100
-# Progress bar chars
+SEMAPHORE_MAX_LIMIT = 150
 FULL_CHAR = "█"
 HALF_CHAR = "▒"
 
@@ -25,7 +24,7 @@ def paint_text(text: str, color_code: int, bold=False) -> str:
 
 
 class Config:
-    def __init__(self, config_path="config/settings.yml") -> None:
+    def __init__(self, config_path="settings.yml") -> None:
         self.config_path = config_path
         self._load_settings()
         self._parse_settings()
@@ -183,7 +182,7 @@ class LPParser:
                 password = password_match.group()
                 break
         return login, password
-    
+
     def _generate_urls(self) -> Generator[str, None, None]:
         for month in range(1, self.config.total_months + 1):
             for day in range(1, monthrange(2020, month)[1] + 1):
