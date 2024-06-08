@@ -20,15 +20,15 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 1. Download the release and extract the zip.
 
 2. Install poetry if you don't have it:
-   ```bash
-   pip install poetry
-   ```
+    ```bash
+    pip install poetry
+    ```
 
 3. Go to the directory and install dependencies:
-   ```bash
-   cd LP-Parser
-   poetry install
-   ```
+    ```bash
+    cd LP-Parser
+    poetry install
+    ```
 
 ## Configuration
 ### Edit `config.yml` to configure the parser:
