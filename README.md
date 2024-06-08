@@ -14,15 +14,20 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 
 ## Requirements
 - [Python 3.x](https://www.python.org/downloads/)
-- Required packages listed in `requirements.txt`
+- Poetry
 
 ## Installation
 1. Download the release and extract the zip.
-   
-2. Go to the directory and install dependencies:
+
+2. Install poetry if you don't have it:
+    ```bash
+    pip install poetry
+    ```
+
+3. Go to the directory and install dependencies:
     ```bash
     cd LP-Parser
-    pip install -r requirements.txt
+    poetry install
     ```
 
 ## Configuration
@@ -58,7 +63,7 @@ for_advanced_users:
 ```
 
 ## Usage
-### Windows 
+<!-- ### Windows 
 - Double-click the `start.bat` file to run the program.
    
 ### Unix-based Systems (Linux, macOS)
@@ -70,7 +75,11 @@ for_advanced_users:
 2. Run the script:
    ```bash
    ./start.sh
-   ```
+   ``` -->
+Run the script:
+```bash
+poetry run python main.py
+```
    
 ## Output
 The script generates an output file in the output folder with the parsed results, named based on the launch timestamp.
