@@ -1,11 +1,10 @@
 # LP-Parser
-## Outdated version 0.1.91
 `LP-Parser` is a Python script designed to parse login and password information from a list of websites. 
 The script can handle different date formats and offset values for URLs, checking for the existence of these URLs and extracting login & password credentials. 
 It's initially designed for [Telegraph](https://telegra.ph/), but you can try some other websites, so free your imagination.
 
 ## Features
-- Configurable via `settings.yml`
+- Configurable via `config.yml`
 - Checks URL availability and extracts login credentials
 - Supports offset values for URL generation
 - Outputs results in a structured YAML file
@@ -13,19 +12,24 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 
 ## Requirements
 - [Python 3.x](https://www.python.org/downloads/)
-- Required packages listed in `requirements.txt`
+- Poetry
 
 ## Installation
 1. Download the release and extract the zip.
-   
-2. Go to the directory and install dependencies:
+
+2. Install poetry if you don't have it:
+    ```bash
+    pip install poetry
+    ```
+
+3. Go to the directory and install dependencies:
     ```bash
     cd LP-Parser
-    pip install -r requirements.txt
+    poetry install
     ```
 
 ## Configuration
-### Edit `settings.yml` to configure the parser:
+### Edit `config.yml` to configure the parser:
    - **websites_list**: List of base URLs to parse.
    - **exceptions_list**: List of emails to exclude from parsing.
    - **offset**: Configure offset for URL generation.
@@ -33,7 +37,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 #### If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
    - **login_regex**: Change what will count as a login, by default we have email.
    - **password_regex**: Customize what will count as a password, by default we have word that contains digit.
-### Example of settings.yml
+### Example of config.yml
 ```yaml
 offset:
   offset: true
@@ -45,10 +49,10 @@ release_date:
   - 2024
   - 2023
 
-websites:
+websites_list:
 - https://telegra.ph/steam
 
-exceptions: 
+exceptions_list: 
 - dmca@telegram.org
 
 for_advanced_users:
@@ -57,19 +61,10 @@ for_advanced_users:
 ```
 
 ## Usage
-### Windows 
-- Double-click the `start.bat` file to run the program.
-   
-### Unix-based Systems (Linux, macOS)
-1. Make the script executable:
-   ```bash
-   chmod +x start.sh
-   ```
-   
-2. Run the script:
-   ```bash
-   ./start.sh
-   ```
+Run the script:
+```bash
+poetry run python main.py
+```
    
 ## Output
 The script generates an output file in the output folder with the parsed results, named based on the launch timestamp.
@@ -85,4 +80,3 @@ url:
   1. https://telegra.ph/steam-01-03
   2. https://telegra.ph/steam-01-03-2
 ```
-
