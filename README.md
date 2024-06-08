@@ -1,6 +1,4 @@
 # LP-Parser
-
-## Overview
 `LP-Parser` is a Python script designed to parse login and password information from a list of websites. 
 The script can handle different date formats and offset values for URLs, checking for the existence of these URLs and extracting login & password credentials. 
 It's initially designed for [Telegraph](https://telegra.ph/), but you can try some other websites, so free your imagination.
@@ -38,7 +36,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
    - **release_date**: Specify if the release date filter should be used and which years to include.
 #### If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
    - **login_regex**: Change what will count as a login, by default we have email.
-   - **password_regex**: Customize what will count as a password, by default we have password that contains digit.
+   - **password_regex**: Customize what will count as a password, by default we have word that contains digit.
 ### Example of config.yml
 ```yaml
 offset:
