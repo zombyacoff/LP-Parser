@@ -7,11 +7,11 @@ from bs4 import BeautifulSoup
 from .config import Config
 from .constants import (
     LAUNCH_TIME,
+    OUTPUT_FILE_PATH_MESSAGE,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
-    OUTPUT_FILE_PATH_MESSAGE,
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
