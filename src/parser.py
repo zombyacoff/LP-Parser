@@ -138,7 +138,7 @@ class Parser:
                 self._semaphore_process(url, semaphore, session)
                 for url in urls_generator
             ]
-            print(paint_text(PARSING_START_MESSAGE, 33))
+            print(paint_text(PARSING_START_MESSAGE, YELLOW))
             await asyncio.gather(*processes)
 
         self.output_file.complete_output()
