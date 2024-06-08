@@ -9,8 +9,8 @@ from src.constants import (
 )
 from src.exceptions.base import ApplicationException
 from src.exceptions.config import (
-    ConfigException,
     ConfigNotFoundError,
+    InvalidConfigError,
     InvalidOffsetValueError,
     InvalidReleaseDateError,
     InvalidWebsiteURLError,
@@ -27,7 +27,7 @@ def main() -> None:
         parser = Parser(config, output_file)
         asyncio.run(parser.main())
     except (
-        ConfigException,
+        InvalidConfigError,
         ConfigNotFoundError,
         InvalidOffsetValueError,
         InvalidReleaseDateError,

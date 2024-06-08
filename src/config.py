@@ -1,7 +1,7 @@
 from .constants import LAUNCH_TIME
 from .exceptions.config import (
-    ConfigException,
     ConfigNotFoundError,
+    InvalidConfigError,
     InvalidOffsetValueError,
     InvalidReleaseDateError,
 )
@@ -38,14 +38,14 @@ class Config:
             self.password_regex = compile_regex(
                 self.config["for_advanced_users"]["password_regex"]
             )
-        except (KeyError, TypeError):
-            raise ConfigException from None
+        except (KeyError, TypeError) as e:
+            raise InvalidConfigError(e) from None
 
     def _validate_offset(self, value: any) -> int:
         if not self.offset_bool:
             return 1
 
-        if not (isinstance(value, int) and 0 <= value <= 250):
+        if not (isinstance(value, int) and 2 <= value <= 250):
             raise InvalidOffsetValueError(offset_value=value)
 
         return value

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from ..utils import ConsoleColor
 from .base import ApplicationException
 from .messages import (
     CONFIG_FILE_ERROR_MESSAGE,
@@ -10,43 +11,52 @@ from .messages import (
 )
 
 
-class ConfigException(ApplicationException):
-    """Base class for all config exceptions"""
-
+@dataclass(frozen=True, eq=False)
+class ConfigNotFoundError(ApplicationException):
     @property
     def message(self) -> str:
-        return CONFIG_FILE_ERROR_MESSAGE
+        return ConsoleColor.paint_info(CONFIG_NOT_FOUND_TEXT)
 
 
 @dataclass(frozen=True, eq=False)
-class ConfigNotFoundError(ConfigException):
+class InvalidConfigError(ApplicationException):
+    """General exception for configuration file errors"""
+
+    error_message: str
+
     @property
     def message(self) -> str:
-        return CONFIG_NOT_FOUND_TEXT
+        return ConsoleColor.paint_info(
+            CONFIG_FILE_ERROR_MESSAGE.format(error=self.error_message)
+        )
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidOffsetValueError(ConfigException):
+class InvalidOffsetValueError(ApplicationException):
     offset_value: any
 
     @property
     def message(self) -> str:
-        return INVALID_OFFSET_TEXT.format(offset_value=self.offset_value)
+        return ConsoleColor.paint_info(
+            INVALID_OFFSET_TEXT.format(offset_value=self.offset_value)
+        )
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidReleaseDateError(ConfigException):
+class InvalidReleaseDateError(ApplicationException):
     release_date: any
 
     @property
     def message(self) -> str:
-        return INVALID_RELEASE_DATE_TEXT.format(release_date=self.release_date)
+        return ConsoleColor.paint_info(
+            INVALID_RELEASE_DATE_TEXT.format(release_date=self.release_date)
+        )
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidWebsiteURLError(ConfigException):
+class InvalidWebsiteURLError(ApplicationException):
     url: str
 
     @property
     def message(self) -> str:
-        return INVALID_WEBSITES_TEXT.format(url=self.url)
+        return ConsoleColor.paint_info(INVALID_WEBSITES_TEXT.format(url=self.url))

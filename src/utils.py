@@ -2,14 +2,7 @@ import re
 from calendar import monthrange
 from datetime import datetime
 
-
-def paint_text(text: str, color_code: int, bold=False) -> str:
-    """Paint a text in console"""
-    return (
-        f"\033[1;{color_code}m{text}\033[0m"
-        if bold
-        else f"\033[{color_code}m{text}\033[0m"
-    )
+from termcolor import colored
 
 
 def get_time_now() -> datetime:
@@ -25,3 +18,20 @@ def get_monthrange(month: int) -> int:
 def compile_regex(regex: str) -> re.Pattern:
     """Compiles a regex and returns a re.Pattern object"""
     return re.compile(regex)
+
+
+class ConsoleColor:
+    @staticmethod
+    def paint_success(text: str) -> str:
+        """Paints the given text in bold green"""
+        return colored(text, "green", attrs=["bold"])
+
+    @staticmethod
+    def paint_error(text: str) -> str:
+        """Paints the given text in bold red"""
+        return colored(text, "red", attrs=["bold"])
+
+    @staticmethod
+    def paint_info(text: str) -> str:
+        """Paints the given text in yellow"""
+        return colored(text, "yellow")

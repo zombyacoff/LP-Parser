@@ -1,5 +1,4 @@
-from ..constants import RED
-from ..utils import paint_text
+from ..utils import ConsoleColor
 from .messages import ERROR_TITLE
 
 
@@ -9,7 +8,7 @@ class ApplicationException(Exception):
     @staticmethod
     def get_error_message(exception: Exception) -> str:
         print(
-            paint_text(ERROR_TITLE, RED, True),
+            ConsoleColor.paint_error(ERROR_TITLE),
             exception.message,
             sep="\n",
         )

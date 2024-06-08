@@ -1,4 +1,3 @@
-from ..utils import paint_text
 from .constants import (
     FULL_CHAR,
     HALF_CHAR,
@@ -21,7 +20,7 @@ class ProgressBar:
         print(
             bar,
             TOTAL_PROGRESS.format(current=current, total=total),
-            paint_text(PERCENT_PROGRESS.format(percent=percent), 1),
+            PERCENT_PROGRESS.format(percent=percent),
             end="\r",
         )
 

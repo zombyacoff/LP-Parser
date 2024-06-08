@@ -6,19 +6,17 @@ from bs4 import BeautifulSoup
 
 from .config import Config
 from .constants import (
-    GREEN,
     LAUNCH_TIME,
     OUTPUT_FILE_PATH_MESSAGE,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
     TIME_ELAPSED_TEXT,
-    YELLOW,
 )
 from .exceptions.config import InvalidWebsiteURLError
 from .extensions.progress_bar import ProgressBar
 from .file_operations.output_file import OutputFile
-from .utils import get_monthrange, get_time_now, paint_text
+from .utils import ConsoleColor, get_monthrange, get_time_now
 
 
 class Parser:
@@ -103,18 +101,17 @@ class Parser:
         # Output file path: parser-output\output_file_name.yml
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
-            paint_text(SUCCESS_COMPLETE_TITLE, GREEN, True)
+            ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE)
             + " "
             * (
                 ProgressBar.get_length(self.config.total_urls)
                 - len(SUCCESS_COMPLETE_TITLE)
             ),
-            paint_text(
+            ConsoleColor.paint_info(
                 f"{TIME_ELAPSED_TEXT.format(time=elapsed_time)}\n"
                 f"{OUTPUT_FILE_PATH_MESSAGE.format(
                     output_file_path=self.output_file.output_file_path
                 )}",
-                YELLOW,
             ),
             sep="\n",
         )
@@ -127,7 +124,7 @@ class Parser:
                 self._semaphore_process(url, semaphore, session)
                 for url in urls_generator
             ]
-            print(paint_text(PARSING_START_MESSAGE, YELLOW))
+            print(ConsoleColor.paint_info(PARSING_START_MESSAGE))
             await asyncio.gather(*processes)
 
         self.output_file.complete_output()
