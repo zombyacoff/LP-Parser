@@ -11,7 +11,7 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 - Async proccessing 
 
 ## Requirements
-- [Python 3.x](https://www.python.org/downloads/)
+- [Python ^3.12](https://www.python.org/downloads/)
 - Poetry
 
 ## Installation
