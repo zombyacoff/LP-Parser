@@ -30,10 +30,10 @@ It's initially designed for [Telegraph](https://telegra.ph/), but you can try so
 
 ## Configuration
 ### Edit `config.yml` to configure the parser:
-   - **websites_list**: List of base URLs to parse.
-   - **exceptions_list**: List of emails to exclude from parsing.
-   - **offset**: Configure offset for URL generation.
+   - **offset**: Configure offset for URL generation (value must be an integer between 2 and 250, inclusive).
    - **release_date**: Specify if the release date filter should be used and which years to include.
+   - **websites**: List of base URLs to parse.
+   - **exceptions**: List of logins to exclude from parsing.
 #### If you are some sort of dark wizard, who understands regex, we got some advanced settings for you!
    - **login_regex**: Change what will count as a login, by default we have email.
    - **password_regex**: Customize what will count as a password, by default we have word that contains digit.
@@ -49,10 +49,10 @@ release_date:
   - 2024
   - 2023
 
-websites_list:
+websites:
 - https://telegra.ph/steam
 
-exceptions_list: 
+exceptions: 
 - dmca@telegram.org
 
 for_advanced_users:
