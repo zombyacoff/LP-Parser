@@ -1,5 +1,5 @@
 # LP-Parser
-`LP-Parser` is a Python script designed to parse login and password information from a list of websites. 
+<!-- `LP-Parser` is a Python script designed to parse login and password information from a list of websites. 
 The script can handle different date formats and offset values for URLs, checking for the existence of these URLs and extracting login & password credentials. 
 It's initially designed for [Telegraph](https://telegra.ph/), but you can try some other websites, so free your imagination.
 
@@ -78,5 +78,5 @@ password:
   2. somepassword7
 url:
   1. https://telegra.ph/steam-01-03
-  2. https://telegra.ph/steam-01-03-2
+  2. https://telegra.ph/steam-01-03-2 -->
 ```

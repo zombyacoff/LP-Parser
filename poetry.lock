@@ -445,6 +445,23 @@ files = [
 tests = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "tuparser"
+version = "0.1.0"
+description = "A module that facilitates the creation of Telegra.ph parsing scripts"
+optional = false
+python-versions = ">=3.12"
+files = [
+    {file = "tuparser-0.1.0-py3-none-any.whl", hash = "sha256:96b285f3af2924b6a5d423f2cf41131dbb63931f41752bbffa27a50c88eae02c"},
+    {file = "tuparser-0.1.0.tar.gz", hash = "sha256:c2f587dbea189185592379b171fcdb3971b626a7ed951d2aeee3775e25644565"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.9.5"
+bs4 = ">=0.0.2"
+PyYaml = ">=6.0.1"
+termcolor = ">=2.4.0"
+
+[[package]]
 name = "yarl"
 version = "1.9.4"
 description = "Yet another URL library"
@@ -550,4 +567,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "9072e3b75e2c145893a41fb263163a82ccd63ab8dd7271469425b951f8843aca"
+content-hash = "7d8686882c4a4c7797189e491a7797b15cd9ab0a1efe7fa69162f5d410566346"

@@ -1,17 +1,14 @@
 [tool.poetry]
 name = "lp-parser"
 version = "1.0.0"
-description = "LP-Parser is a Python script designed to parse login and password information from a list of websites"
+description = ""
 authors = ["zombyacoff, lazerofmagma"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-aiohttp = "^3.9.5"
-bs4 = "^0.0.2"
-PyYAML = "^6.0.1"
-termcolor = "^2.4.0"
+tuparser = "^0.1.0"
 
 
 [build-system]

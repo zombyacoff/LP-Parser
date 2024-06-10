@@ -1,5 +1,7 @@
+# General settings
+# ----------------------------------------------------------------
 offset:
-  offset: false
+  offset: true
   value: 2 # min 2 : max 250
 
 release_date:
@@ -7,11 +9,15 @@ release_date:
   years:
   -
 
-websites: # example: https://telegra.ph/steam
--
+titles: # example: https://telegra.ph/steam
+- steam
 
+progress_bar: true
+
+# LP-Parser settings
+# ----------------------------------------------------------------
 exceptions: # telegra.ph: dmca@telegram.org
--
+- dmca@telegram.org
 
 # DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
 for_advanced_users:

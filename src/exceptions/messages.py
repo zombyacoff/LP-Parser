@@ -1,6 +1,0 @@
-ERROR_TITLE = "APPLICATION ERROR"
-CONFIG_FILE_ERROR_MESSAGE = "The config.yml file is incorrect: {error}"
-CONFIG_NOT_FOUND_TEXT = "The config.yml file is missing"
-INVALID_OFFSET_TEXT = "Offset value is incorrect: {offset_value}\n(value must be an integer greater than 2 and less than 250)"
-INVALID_RELEASE_DATE_TEXT = "Invalid release date: {release_date}"
-INVALID_WEBSITES_TEXT = "Invalid url: {url}\nCheck websites in config.yml"
