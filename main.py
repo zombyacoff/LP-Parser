@@ -1,4 +1,3 @@
-import aiohttp
 from tuparser.config import Config
 from tuparser.file_operations.output_file import YAMLOutputFile
 from tuparser.parser import TelegraphParser, run_parser
@@ -23,14 +22,7 @@ class LPParser(TelegraphParser):
         super().__init__(config)
         self.output_file = output_file
 
-    async def process_url(
-        self, url: str, session: aiohttp.ClientSession
-    ) -> None:
-        soup = await super().process_url(url, session)
-        # return if url is not valid
-        if soup is None:
-            return
-
+    async def parse(self, url: str, soup) -> None:
         website_text = list(soup.stripped_strings)
         output_data = self.extract_credentials(website_text) + (url,)
         if output_data[0] != "":
@@ -41,10 +33,7 @@ class LPParser(TelegraphParser):
 
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
-            if (
-                email_match is None
-                or email_match.group() in self.config.exceptions
-            ):
+            if email_match is None or email_match.group() in self.config.exceptions:
                 continue
             login = email_match.group()
             if ":" in login:
@@ -52,9 +41,7 @@ class LPParser(TelegraphParser):
                 login, password = data[0], data[-1]
                 return login, password
             for k in range(1, min(4, len(website_text) - i)):
-                password_match = self.config.password_regex.search(
-                    website_text[i + k]
-                )
+                password_match = self.config.password_regex.search(website_text[i + k])
                 if password_match is None:
                     continue
                 password = password_match.group()
@@ -64,10 +51,10 @@ class LPParser(TelegraphParser):
 
     def get_complete_message(self) -> None:
         super().get_complete_message()
-        # Output file path: parser-output\output_file_name.yml
+        # Output file path: output_folder_name\output_file_name.yml
         print(
             ConsoleColor.paint_info(
-                f"Output file path: parser-output/{self.output_file.output_file_name}",
+                f"Output file path: {self.output_file.output_file_path}",
             )
         )
 
@@ -77,9 +64,12 @@ class LPParser(TelegraphParser):
 
 
 if __name__ == "__main__":
-    output_file = YAMLOutputFile({"login": {}, "password": {}, "url": {}})
+    output_file = YAMLOutputFile(
+        {"login": {}, "password": {}, "url": {}}, "lp-parser-out"
+    )
     run_parser(
         config_class=LPParserConfig,
-        parser_class=LPParser,
         parser_args=(output_file,),
+        parser_class=LPParser,
+        config_path="lp-config.yml",
     )

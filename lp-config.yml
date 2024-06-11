@@ -1,5 +1,3 @@
-# General settings
-# ----------------------------------------------------------------
 offset:
   offset: false
   value: 2 # min 2 : max 250
@@ -10,12 +8,10 @@ release_date:
   -
 
 titles: # example: cat
--
+- steam
 
 progress_bar: true
 
-# LP-Parser settings
-# ----------------------------------------------------------------
 exceptions:
 - dmca@telegram.org
 
