@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lp-parser"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
 authors = ["zombyacoff, lazerofmagma"]
 license = "MIT"
@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-tuparser = "^0.1.1"
+tuparser = "^0.1.2"
 
 
 [build-system]

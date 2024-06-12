@@ -1,13 +1,16 @@
-from tuparser.config import Config
-from tuparser.file_operations.output_file import YAMLOutputFile
-from tuparser.parser import TelegraphParser, run_parser
-from tuparser.utils import ConsoleColor, compile_regex
+from tuparser import (
+    Config,
+    ConsoleColor,
+    TelegraphParser,
+    YAMLOutputFile,
+    compile_regex,
+    run_parser,
+)
 
 
 class LPParserConfig(Config):
     def parse_config(self) -> None:
         super().parse_config()
-
         self.exceptions = self.config["exceptions"] + ["dmca@telegram.org"]
         self.login_regex = compile_regex(
             self.config["for_advanced_users"]["login_regex"]
@@ -51,16 +54,11 @@ class LPParser(TelegraphParser):
 
     def get_complete_message(self) -> None:
         super().get_complete_message()
-        # Output file path: output_folder_name\output_file_name.yml
         print(
             ConsoleColor.paint_info(
-                f"Output file path: {self.output_file.output_file_path}",
+                f"Output file path: {self.output_file.file_path}",
             )
         )
-
-    async def main(self) -> None:
-        await super().main()
-        self.output_file.complete_output()
 
 
 if __name__ == "__main__":
