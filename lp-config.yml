@@ -1,21 +1,15 @@
-offset:
-  offset: false
-  value: 2 # min 2 : max 250
+offset: false
 
-release_date:
-  release_date: false
-  years:
-  -
+release_date: false
+
+progress_bar: true
 
 titles:
 -
 
-progress_bar: true
-
 exceptions:
 -
 
-# DON'T TOUCH IF YOU DON'T WHAT ARE YOU DOING
 for_advanced_users:
-  login_regex: \S+@\S+\.\S+ # All logins are a email
-  password_regex: \S*\d\S* # All words that contain a digit are considered a password
+  login_regex: \S+@\S+\.\S+
+  password_regex: \S*\d\S*

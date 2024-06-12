@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-tuparser = "^0.1.2"
+tuparser = "^0.1.3"
 
 
 [build-system]
