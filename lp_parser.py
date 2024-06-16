@@ -5,13 +5,19 @@ from tuparser import (
     YAMLOutputFile,
     compile_regex,
     run_parser,
+    validate,
 )
 
 
 class LPParserConfig(Config):
     def parse_config(self) -> None:
         super().parse_config()
-        self.exceptions = self.config["exceptions"] + ["dmca@telegram.org"]
+        self.exceptions = validate(
+            self.config["exceptions"],
+            "any_list_wn",
+            default_value=[],
+            exception_message="Invalid exceptions: {value}",
+        ) + ["dmca@telegram.org"]
         self.login_regex = compile_regex(
             self.config["for_advanced_users"]["login_regex"]
         )
@@ -27,16 +33,19 @@ class LPParser(TelegraphParser):
 
     async def parse(self, url: str, soup) -> None:
         website_text = list(soup.stripped_strings)
-        output_data = self.extract_credentials(website_text) + (url,)
+        output_data = self.extract_credentials(website_text)
         if output_data[0] != "":
-            self.output_file.write_output(output_data)
+            self.output_file.write_data(*output_data, url)
 
     def extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
         login = password = ""
 
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
-            if email_match is None or email_match.group() in self.config.exceptions:
+            if (
+                email_match is None
+                or email_match.group() in self.config.exceptions
+            ):
                 continue
             login = email_match.group()
             if ":" in login:
@@ -44,7 +53,9 @@ class LPParser(TelegraphParser):
                 login, password = data[0], data[-1]
                 return login, password
             for k in range(1, min(4, len(website_text) - i)):
-                password_match = self.config.password_regex.search(website_text[i + k])
+                password_match = self.config.password_regex.search(
+                    website_text[i + k]
+                )
                 if password_match is None:
                     continue
                 password = password_match.group()
@@ -66,8 +77,8 @@ if __name__ == "__main__":
         {"login": {}, "password": {}, "url": {}}, "lp-parser-out"
     )
     run_parser(
+        LPParser,
         config_class=LPParserConfig,
-        parser_args=(output_file,),
-        parser_class=LPParser,
-        config_path="lp-config.yml",
+        config_path="lp-config",
+        parser_args=[output_file],
     )

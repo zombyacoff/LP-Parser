@@ -7,8 +7,7 @@ progress_bar: true
 titles:
 -
 
-exceptions:
--
+exceptions: false
 
 for_advanced_users:
   login_regex: \S+@\S+\.\S+
