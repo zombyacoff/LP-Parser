@@ -42,10 +42,7 @@ class LPParser(TelegraphParser):
 
         for i, current in enumerate(website_text):
             email_match = self.config.login_regex.search(current)
-            if (
-                email_match is None
-                or email_match.group() in self.config.exceptions
-            ):
+            if email_match is None or email_match.group() in self.config.exceptions:
                 continue
             login = email_match.group()
             if ":" in login:
@@ -53,9 +50,7 @@ class LPParser(TelegraphParser):
                 login, password = data[0], data[-1]
                 return login, password
             for k in range(1, min(4, len(website_text) - i)):
-                password_match = self.config.password_regex.search(
-                    website_text[i + k]
-                )
+                password_match = self.config.password_regex.search(website_text[i + k])
                 if password_match is None:
                     continue
                 password = password_match.group()
